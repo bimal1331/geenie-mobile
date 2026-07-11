@@ -29,9 +29,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="bundles"
+        name="explore"
         options={{
-          title: 'Bundles',
+          title: 'Explore',
           tabBarIcon: ({ color, size }) => (
             <SymbolView name="square.stack.3d.up" tintColor={color} size={size} />
           ),

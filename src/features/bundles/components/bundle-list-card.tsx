@@ -13,9 +13,6 @@ export function BundleListCard({ bundle }: BundleListCardProps) {
   return (
     <ThemedView type="backgroundElement" style={styles.card}>
       <View style={styles.headerRow}>
-        <ThemedView type="backgroundSelected" style={styles.badge}>
-          <ThemedText type="smallBold">{bundle.mood}</ThemedText>
-        </ThemedView>
         {bundle.isPremium ? (
           <ThemedView type="backgroundSelected" style={styles.badge}>
             <ThemedText type="smallBold">Premium</ThemedText>
@@ -28,15 +25,15 @@ export function BundleListCard({ bundle }: BundleListCardProps) {
       </ThemedText>
 
       <ThemedText themeColor="textSecondary" style={styles.description}>
-        {bundle.description}
+        {bundle.description ?? 'A published affirmation bundle ready for mobile listening.'}
       </ThemedText>
 
       <View style={styles.metaRow}>
         <ThemedText type="small" themeColor="textSecondary">
-          {bundle.durationLabel}
+          {bundle.affirmationCount} affirmations
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {bundle.affirmationCount} affirmations
+          {bundle.slug}
         </ThemedText>
       </View>
     </ThemedView>

@@ -1,5 +1,5 @@
 import { BundlesScreen } from '@/features/bundles/screens/bundles-screen';
 
-export default function BundlesRoute() {
+export default function ExploreRoute() {
   return <BundlesScreen />;
 }

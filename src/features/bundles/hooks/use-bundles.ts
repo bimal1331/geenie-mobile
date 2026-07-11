@@ -6,28 +6,44 @@ import { BundleSummary } from '@/features/bundles/types';
 type UseBundlesState = {
   bundles: BundleSummary[];
   isLoading: boolean;
+  error: string | null;
 };
 
 export function useBundles() {
   const [state, setState] = useState<UseBundlesState>({
     bundles: [],
     isLoading: true,
+    error: null,
   });
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadBundles() {
-      const bundles = await listBundleCatalog();
+      try {
+        const bundles = await listBundleCatalog();
 
-      if (!isMounted) {
-        return;
+        if (!isMounted) {
+          return;
+        }
+
+        setState({
+          bundles,
+          isLoading: false,
+          error: null,
+        });
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        setState({
+          bundles: [],
+          isLoading: false,
+          error:
+            error instanceof Error ? error.message : 'Unable to load bundle catalog.',
+        });
       }
-
-      setState({
-        bundles,
-        isLoading: false,
-      });
     }
 
     void loadBundles();

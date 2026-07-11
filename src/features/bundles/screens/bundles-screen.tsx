@@ -1,29 +1,52 @@
-import { AppScreen, SectionCard } from '@/components/app-screen';
+import { AppScreen } from '@/components/app-screen';
 import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { Spacing } from '@/constants/theme';
 import { BundleListCard } from '@/features/bundles/components/bundle-list-card';
 import { useBundles } from '@/features/bundles/hooks/use-bundles';
+import { StyleSheet } from 'react-native';
 
 export function BundlesScreen() {
-  const { bundles, isLoading } = useBundles();
+  const { bundles, isLoading, error } = useBundles();
 
   return (
     <AppScreen
       eyebrow="Curated audio"
-      title="Bundles"
-      description="Editorially assembled affirmation sets will live here, with a clean path into detail, playback, and a more personal listening rhythm.">
-      <SectionCard
-        title="Featured right now"
-        description="This first mobile slice is intentionally organized like a real feature: route at the edge, feature code in one place, and a service layer ready for the eventual API.">
-        <ThemedText themeColor="textSecondary">
-          {isLoading
-            ? 'Loading bundle catalog...'
-            : 'These are still mock bundles, but the structure is now ready for published mobile data.'}
-        </ThemedText>
-      </SectionCard>
+      title="Explore"
+      description="Discover curated affirmation bundles with a clean path into detail, playback, and a more personal listening rhythm.">
+      {isLoading ? (
+        <ThemedView type="backgroundElement" style={styles.stateCard}>
+          <ThemedText themeColor="textSecondary">Loading collections...</ThemedText>
+        </ThemedView>
+      ) : null}
 
-      {bundles.map((bundle) => (
-        <BundleListCard key={bundle.id} bundle={bundle} />
-      ))}
+      {!isLoading && error ? (
+        <ThemedView type="backgroundElement" style={styles.stateCard}>
+          <ThemedText themeColor="textSecondary">{error}</ThemedText>
+        </ThemedView>
+      ) : null}
+
+      {!isLoading && !error && bundles.length === 0 ? (
+        <ThemedView type="backgroundElement" style={styles.stateCard}>
+          <ThemedText themeColor="textSecondary">
+            Nothing is available to explore right now.
+          </ThemedText>
+        </ThemedView>
+      ) : null}
+
+      {!isLoading &&
+        !error &&
+        bundles.map((bundle) => (
+          <BundleListCard key={bundle.id} bundle={bundle} />
+        ))}
     </AppScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  stateCard: {
+    borderRadius: Spacing.four,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.four,
+  },
+});
