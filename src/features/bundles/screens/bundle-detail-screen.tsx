@@ -6,6 +6,7 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useBundleDetail } from '@/features/bundles/hooks/use-bundle-detail';
+import { usePlayerStore } from '@/features/player/store/player-store';
 import { useTheme } from '@/hooks/use-theme';
 import { Pressable, StyleSheet } from 'react-native';
 
@@ -17,6 +18,7 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
   const router = useRouter();
   const theme = useTheme();
   const { bundle, isLoading, error } = useBundleDetail(slug);
+  const playBundle = usePlayerStore((state) => state.playBundle);
 
   function handleBack() {
     if (router.canGoBack()) {
@@ -63,7 +65,12 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
       ) : null}
 
       {!isLoading && !error && bundle && bundle.items.length > 0 ? (
-        <Pressable onPress={() => router.push(`/player/${bundle.slug}`)} style={({ pressed }) => pressed && styles.pressed}>
+        <Pressable
+          onPress={() => {
+            playBundle(bundle);
+            router.push(`/player/${bundle.slug}`);
+          }}
+          style={({ pressed }) => pressed && styles.pressed}>
           <ThemedView type="backgroundSelected" style={styles.startButton}>
             <ThemedText type="smallBold">Play</ThemedText>
           </ThemedView>

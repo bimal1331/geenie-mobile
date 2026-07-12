@@ -7,5 +7,4 @@ export type BundlePlayerSession = {
   currentText: string | null;
   progressLabel: string;
   progressRatio: number;
-  advanceMs: number;
 };
