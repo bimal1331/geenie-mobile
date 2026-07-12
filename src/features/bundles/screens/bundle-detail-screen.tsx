@@ -7,7 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useBundleDetail } from '@/features/bundles/hooks/use-bundle-detail';
 import { useTheme } from '@/hooks/use-theme';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 type BundleDetailScreenProps = {
   slug: string | null;
@@ -66,17 +66,7 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
         !error &&
         bundle?.items.map((item) => (
           <ThemedView key={`${item.affirmationId}-${item.orderIndex}`} type="backgroundElement" style={styles.itemCard}>
-            <View style={styles.itemHeader}>
-              <ThemedView type="backgroundSelected" style={styles.orderBadge}>
-                <ThemedText type="smallBold">{item.orderIndex + 1}</ThemedText>
-              </ThemedView>
-            </View>
             <ThemedText style={styles.itemText}>{item.text}</ThemedText>
-            {item.tags.length > 0 ? (
-              <ThemedText type="small" themeColor="textSecondary">
-                {item.tags.join(' • ')}
-              </ThemedText>
-            ) : null}
           </ThemedView>
         ))}
     </AppScreen>
@@ -105,15 +95,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
     gap: Spacing.two,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-  },
-  orderBadge: {
-    alignSelf: 'flex-start',
-    borderRadius: 999,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.one,
   },
   itemText: {
     fontSize: 18,
