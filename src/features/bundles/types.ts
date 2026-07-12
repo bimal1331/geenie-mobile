@@ -1,3 +1,5 @@
+export type BundlePlaybackVariantKey = 'default' | 'male' | 'female';
+
 export type BundleSummary = {
   id: string;
   slug: string;
@@ -13,6 +15,11 @@ export type BundleDetailItem = {
   orderIndex: number;
   text: string;
   tags: string[];
+  languageCode: string | null;
+  variantKey: BundlePlaybackVariantKey | null;
+  voiceId: string | null;
+  voiceName: string | null;
+  audioUrl: string | null;
 };
 
 export type BundleDetail = BundleSummary & {

@@ -12,6 +12,7 @@ export function useBundlePlayer(slug: string | null) {
   const queue = usePlayerStore((state) => state.queue);
   const currentIndex = usePlayerStore((state) => state.currentIndex);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const playbackError = usePlayerStore((state) => state.playbackError);
   const playBundle = usePlayerStore((state) => state.playBundle);
   const togglePlayback = usePlayerStore((state) => state.togglePlayback);
   const goToNext = usePlayerStore((state) => state.goToNext);
@@ -52,7 +53,7 @@ export function useBundlePlayer(slug: string | null) {
 
   return {
     isLoading: queue.length === 0 ? isLoading : false,
-    error: queue.length === 0 ? error : null,
+    error: playbackError ?? (queue.length === 0 ? error : null),
     session,
     canGoPrevious: session.currentIndex > 0,
     canGoNext: session.currentIndex < Math.max(session.totalAffirmations - 1, 0),
