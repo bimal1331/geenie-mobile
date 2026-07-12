@@ -62,6 +62,14 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
         </ThemedView>
       ) : null}
 
+      {!isLoading && !error && bundle && bundle.items.length > 0 ? (
+        <Pressable onPress={() => router.push(`/player/${bundle.slug}`)} style={({ pressed }) => pressed && styles.pressed}>
+          <ThemedView type="backgroundSelected" style={styles.startButton}>
+            <ThemedText type="smallBold">Play</ThemedText>
+          </ThemedView>
+        </Pressable>
+      ) : null}
+
       {!isLoading &&
         !error &&
         bundle?.items.map((item) => (
@@ -89,6 +97,12 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.8,
+  },
+  startButton: {
+    borderRadius: 999,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.three,
+    alignSelf: 'flex-start',
   },
   itemCard: {
     borderRadius: Spacing.four,
