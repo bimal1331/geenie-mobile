@@ -7,3 +7,14 @@ export type BundleSummary = {
   affirmationCount: number;
   isPremium: boolean;
 };
+
+export type BundleDetailItem = {
+  affirmationId: string;
+  orderIndex: number;
+  text: string;
+  tags: string[];
+};
+
+export type BundleDetail = BundleSummary & {
+  items: BundleDetailItem[];
+};

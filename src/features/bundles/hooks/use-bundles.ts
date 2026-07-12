@@ -37,6 +37,10 @@ export function useBundles() {
           return;
         }
 
+        if (__DEV__) {
+          console.error('[useBundles] Unable to load bundle catalog', error);
+        }
+
         setState({
           bundles: [],
           isLoading: false,

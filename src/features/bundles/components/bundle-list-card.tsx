@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -7,36 +7,39 @@ import { BundleSummary } from '@/features/bundles/types';
 
 type BundleListCardProps = {
   bundle: BundleSummary;
+  onPress?: () => void;
 };
 
-export function BundleListCard({ bundle }: BundleListCardProps) {
+export function BundleListCard({ bundle, onPress }: BundleListCardProps) {
   return (
-    <ThemedView type="backgroundElement" style={styles.card}>
-      <View style={styles.headerRow}>
-        {bundle.isPremium ? (
-          <ThemedView type="backgroundSelected" style={styles.badge}>
-            <ThemedText type="smallBold">Premium</ThemedText>
-          </ThemedView>
-        ) : null}
-      </View>
+    <Pressable onPress={onPress} style={({ pressed }) => pressed && styles.pressed}>
+      <ThemedView type="backgroundElement" style={styles.card}>
+        <View style={styles.headerRow}>
+          {bundle.isPremium ? (
+            <ThemedView type="backgroundSelected" style={styles.badge}>
+              <ThemedText type="smallBold">Premium</ThemedText>
+            </ThemedView>
+          ) : null}
+        </View>
 
-      <ThemedText type="subtitle" style={styles.title}>
-        {bundle.title}
-      </ThemedText>
-
-      <ThemedText themeColor="textSecondary" style={styles.description}>
-        {bundle.description ?? 'A published affirmation bundle ready for mobile listening.'}
-      </ThemedText>
-
-      <View style={styles.metaRow}>
-        <ThemedText type="small" themeColor="textSecondary">
-          {bundle.affirmationCount} affirmations
+        <ThemedText type="subtitle" style={styles.title}>
+          {bundle.title}
         </ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
-          {bundle.slug}
+
+        <ThemedText themeColor="textSecondary" style={styles.description}>
+          {bundle.description ?? 'A published affirmation bundle ready for mobile listening.'}
         </ThemedText>
-      </View>
-    </ThemedView>
+
+        <View style={styles.metaRow}>
+          <ThemedText type="small" themeColor="textSecondary">
+            {bundle.affirmationCount} affirmations
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            {bundle.slug}
+          </ThemedText>
+        </View>
+      </ThemedView>
+    </Pressable>
   );
 }
 
@@ -46,6 +49,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
     gap: Spacing.two,
+  },
+  pressed: {
+    opacity: 0.86,
   },
   headerRow: {
     flexDirection: 'row',

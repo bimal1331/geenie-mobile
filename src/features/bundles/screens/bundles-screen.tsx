@@ -1,3 +1,5 @@
+import { useRouter } from 'expo-router';
+
 import { AppScreen } from '@/components/app-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -7,6 +9,7 @@ import { useBundles } from '@/features/bundles/hooks/use-bundles';
 import { StyleSheet } from 'react-native';
 
 export function BundlesScreen() {
+  const router = useRouter();
   const { bundles, isLoading, error } = useBundles();
 
   return (
@@ -37,7 +40,11 @@ export function BundlesScreen() {
       {!isLoading &&
         !error &&
         bundles.map((bundle) => (
-          <BundleListCard key={bundle.id} bundle={bundle} />
+          <BundleListCard
+            key={bundle.id}
+            bundle={bundle}
+            onPress={() => router.push(`/bundles/${bundle.slug}`)}
+          />
         ))}
     </AppScreen>
   );

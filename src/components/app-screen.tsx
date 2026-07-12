@@ -8,13 +8,14 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 type AppScreenProps = {
+  headerLeft?: ReactNode;
   eyebrow?: string;
   title: string;
   description: string;
   children?: ReactNode;
 };
 
-export function AppScreen({ eyebrow, title, description, children }: AppScreenProps) {
+export function AppScreen({ headerLeft, eyebrow, title, description, children }: AppScreenProps) {
   const theme = useTheme();
 
   return (
@@ -23,6 +24,7 @@ export function AppScreen({ eyebrow, title, description, children }: AppScreenPr
       contentContainerStyle={styles.scrollContent}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.hero}>
+          {headerLeft ? <View style={styles.headerRow}>{headerLeft}</View> : null}
           {eyebrow ? (
             <ThemedView type="backgroundElement" style={styles.eyebrowBadge}>
               <ThemedText type="smallBold">{eyebrow}</ThemedText>
@@ -82,6 +84,11 @@ const styles = StyleSheet.create({
   hero: {
     gap: Spacing.three,
     paddingTop: Spacing.four,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   eyebrowBadge: {
     alignSelf: 'flex-start',
