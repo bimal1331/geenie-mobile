@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -8,6 +9,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useBundlePlayer } from '@/features/player/hooks/use-bundle-player';
+import { MusicPickerSheet } from '@/features/player/components/music-picker-sheet';
+import { usePlayerStore } from '@/features/player/store/player-store';
 
 type BundlePlayerScreenProps = {
   slug: string | null;
@@ -16,6 +19,8 @@ type BundlePlayerScreenProps = {
 export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
   const router = useRouter();
   const theme = useTheme();
+  const [isMusicPickerOpen, setIsMusicPickerOpen] = useState(false);
+  const selectedMusicTrack = usePlayerStore((state) => state.selectedMusicTrack);
   const {
     isLoading,
     error,
@@ -43,6 +48,17 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
         <Pressable onPress={handleBack} style={({ pressed }) => pressed && styles.pressed}>
           <ThemedView type="backgroundElement" style={styles.backButton}>
             <SymbolView name="chevron.left" tintColor={theme.text} size={18} />
+          </ThemedView>
+        </Pressable>
+      }
+      headerRight={
+        <Pressable
+          onPress={() => setIsMusicPickerOpen(true)}
+          style={({ pressed }) => pressed && styles.pressed}>
+          <ThemedView
+            type={selectedMusicTrack ? 'backgroundSelected' : 'backgroundElement'}
+            style={styles.musicButton}>
+            <SymbolView name="music.note" tintColor={theme.text} size={18} />
           </ThemedView>
         </Pressable>
       }
@@ -140,6 +156,7 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
           </ThemedView>
         </>
       ) : null}
+      <MusicPickerSheet isOpen={isMusicPickerOpen} onClose={() => setIsMusicPickerOpen(false)} />
     </AppScreen>
   );
 }
@@ -147,6 +164,14 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
 const styles = StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
+    borderRadius: 999,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  musicButton: {
+    alignSelf: 'flex-end',
     borderRadius: 999,
     width: 40,
     height: 40,

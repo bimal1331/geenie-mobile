@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 import { BundleDetail, BundleDetailItem } from '@/features/bundles/types';
+import { MusicTrack } from '@/features/music/types';
 
 export type PlayerQueueItem = {
   affirmationId: string;
@@ -20,6 +21,7 @@ type PlayerStoreState = {
   isPlaying: boolean;
   playbackError: string | null;
   playbackRevision: number;
+  selectedMusicTrack: MusicTrack | null;
 };
 
 type PlayerStoreActions = {
@@ -37,6 +39,8 @@ type PlayerStoreActions = {
   clearPlayer: () => void;
   setPlaybackError: (message: string | null) => void;
   setTrackEnded: () => void;
+  selectMusicTrack: (track: MusicTrack) => void;
+  clearMusicTrack: () => void;
 };
 
 type PlayerStore = PlayerStoreState & PlayerStoreActions;
@@ -61,6 +65,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   isPlaying: false,
   playbackError: null,
   playbackRevision: 0,
+  selectedMusicTrack: null,
 
   playBundle: (bundle, startIndex = 0) => {
     const queue = bundle.items.map(toQueueItem);
@@ -193,6 +198,18 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       currentIndex: currentIndex + 1,
       isPlaying: true,
       playbackError: null,
+    });
+  },
+
+  selectMusicTrack: (track) => {
+    set({
+      selectedMusicTrack: track,
+    });
+  },
+
+  clearMusicTrack: () => {
+    set({
+      selectedMusicTrack: null,
     });
   },
 }));

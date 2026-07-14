@@ -13,19 +13,28 @@ export function PlayerController() {
   const currentIndex = usePlayerStore((state) => state.currentIndex);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playbackRevision = usePlayerStore((state) => state.playbackRevision);
+  const selectedMusicTrack = usePlayerStore((state) => state.selectedMusicTrack);
   const setTrackEnded = usePlayerStore((state) => state.setTrackEnded);
   const setPlaybackError = usePlayerStore((state) => state.setPlaybackError);
   const currentItem = queue[currentIndex] ?? null;
   const playerRef = useRef<AudioPlayer | null>(null);
+  const musicPlayerRef = useRef<AudioPlayer | null>(null);
   const currentSourceRef = useRef<string | null>(null);
+  const currentMusicSourceRef = useRef<string | null>(null);
   const previousDidJustFinishRef = useRef(false);
 
   if (!playerRef.current) {
     playerRef.current = createAudioPlayer(null);
   }
 
+  if (!musicPlayerRef.current) {
+    musicPlayerRef.current = createAudioPlayer(null);
+  }
+
   const player = playerRef.current;
+  const musicPlayer = musicPlayerRef.current;
   const status = useAudioPlayerStatus(player);
+  const musicStatus = useAudioPlayerStatus(musicPlayer);
 
   useEffect(() => {
     void setAudioModeAsync({
@@ -35,9 +44,11 @@ export function PlayerController() {
 
     return () => {
       player.remove();
+      musicPlayer.remove();
       playerRef.current = null;
+      musicPlayerRef.current = null;
     };
-  }, [player]);
+  }, [musicPlayer, player]);
 
   useEffect(() => {
     const audioUrl = currentItem?.audioUrl ?? null;
@@ -114,6 +125,50 @@ export function PlayerController() {
       });
     }
   }, [currentIndex, currentItem, setPlaybackError, status.error]);
+
+  useEffect(() => {
+    const musicUrl = selectedMusicTrack?.audioUrl ?? null;
+
+    if (!musicUrl) {
+      currentMusicSourceRef.current = null;
+      musicPlayer.pause();
+      return;
+    }
+
+    if (currentMusicSourceRef.current === musicUrl) {
+      return;
+    }
+
+    currentMusicSourceRef.current = musicUrl;
+    musicPlayer.replace(musicUrl);
+  }, [musicPlayer, selectedMusicTrack?.audioUrl]);
+
+  useEffect(() => {
+    const shouldPlayMusic =
+      Boolean(selectedMusicTrack?.audioUrl) &&
+      Boolean(currentItem?.audioUrl) &&
+      isPlaying;
+
+    if (shouldPlayMusic) {
+      musicPlayer.play();
+      return;
+    }
+
+    musicPlayer.pause();
+  }, [currentItem?.audioUrl, isPlaying, musicPlayer, selectedMusicTrack?.audioUrl]);
+
+  useEffect(() => {
+    if (!musicStatus.error) {
+      return;
+    }
+
+    if (__DEV__) {
+      console.error('[PlayerController] Background music playback error', {
+        selectedMusicTrack,
+        error: musicStatus.error,
+      });
+    }
+  }, [musicStatus.error, selectedMusicTrack]);
 
   return null;
 }

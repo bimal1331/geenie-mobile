@@ -9,13 +9,21 @@ import { useTheme } from '@/hooks/use-theme';
 
 type AppScreenProps = {
   headerLeft?: ReactNode;
+  headerRight?: ReactNode;
   eyebrow?: string;
   title: string;
   description: string;
   children?: ReactNode;
 };
 
-export function AppScreen({ headerLeft, eyebrow, title, description, children }: AppScreenProps) {
+export function AppScreen({
+  headerLeft,
+  headerRight,
+  eyebrow,
+  title,
+  description,
+  children,
+}: AppScreenProps) {
   const theme = useTheme();
 
   return (
@@ -24,7 +32,12 @@ export function AppScreen({ headerLeft, eyebrow, title, description, children }:
       contentContainerStyle={styles.scrollContent}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.hero}>
-          {headerLeft ? <View style={styles.headerRow}>{headerLeft}</View> : null}
+          {headerLeft || headerRight ? (
+            <View style={styles.headerRow}>
+              <View style={styles.headerSide}>{headerLeft}</View>
+              <View style={styles.headerSideRight}>{headerRight}</View>
+            </View>
+          ) : null}
           {eyebrow ? (
             <ThemedView type="backgroundElement" style={styles.eyebrowBadge}>
               <ThemedText type="smallBold">{eyebrow}</ThemedText>
@@ -88,7 +101,16 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
+    gap: Spacing.three,
+  },
+  headerSide: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  headerSideRight: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   eyebrowBadge: {
     alignSelf: 'flex-start',
