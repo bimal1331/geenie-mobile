@@ -2,7 +2,6 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StyleSheet, View, useColorScheme } from 'react-native';
 
-import { MiniPlayerDock } from '@/features/player/components/mini-player-dock';
 import { PlayerController } from '@/features/player/components/player-controller';
 
 SplashScreen.preventAutoHideAsync();
@@ -15,7 +14,6 @@ export default function TabLayout() {
       <View style={styles.root}>
         <PlayerController />
         <Stack screenOptions={{ headerShown: false }} />
-        <MiniPlayerDock />
       </View>
     </ThemeProvider>
   );

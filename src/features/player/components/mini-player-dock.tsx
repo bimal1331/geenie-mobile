@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { usePlayerStore } from '@/features/player/store/player-store';
 
@@ -42,7 +42,7 @@ export function MiniPlayerDock() {
       style={[
         styles.container,
         {
-          paddingBottom: Math.max(insets.bottom, Spacing.three),
+          bottom: BottomTabInset + Math.max(insets.bottom, Spacing.one),
         },
       ]}>
       <ThemedView type="backgroundElement" style={styles.dock}>
@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,
     paddingHorizontal: Spacing.three,
   },
   dock: {
