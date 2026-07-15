@@ -206,9 +206,8 @@ export function PlayerController() {
   useEffect(() => {
     const shouldPlayMusic =
       Boolean(selectedMusicTrack?.audioUrl) &&
-      Boolean(currentItem?.audioUrl) &&
-      isPlaying &&
-      !isInAffirmationGap;
+      queue.length > 0 &&
+      isPlaying;
 
     if (shouldPlayMusic) {
       musicPlayer.play();
@@ -216,7 +215,7 @@ export function PlayerController() {
     }
 
     musicPlayer.pause();
-  }, [currentItem?.audioUrl, isInAffirmationGap, isPlaying, musicPlayer, selectedMusicTrack?.audioUrl]);
+  }, [isPlaying, musicPlayer, queue.length, selectedMusicTrack?.audioUrl]);
 
   useEffect(() => {
     if (isPlaying) {
