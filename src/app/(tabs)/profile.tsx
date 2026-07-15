@@ -1,5 +1,6 @@
 import { AppScreen, SectionCard } from '@/components/app-screen';
 import { ThemedText } from '@/components/themed-text';
+import { ProfileAuthPanel } from '@/features/auth/components/profile-auth-panel';
 
 export default function ProfileScreen() {
   return (
@@ -7,11 +8,12 @@ export default function ProfileScreen() {
       eyebrow="Account and settings"
       title="Profile"
       description="Profile will hold account preferences, playback defaults, notification choices, and any membership or subscription details that shape the listening experience.">
+      <ProfileAuthPanel />
       <SectionCard
         title="A steady control center"
-        description="This is the right home for identity, settings, and other personal controls that should stay separate from discovery and playback.">
+        description="This is where we can keep identity, playback defaults, notifications, membership, and other personal controls separate from discovery and playback.">
         <ThemedText themeColor="textSecondary">
-          Once auth is in place, we can layer preferences and account actions onto this screen.
+          Guests can keep exploring freely. Signed-in features will grow here over time.
         </ThemedText>
       </SectionCard>
     </AppScreen>
