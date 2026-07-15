@@ -7,21 +7,28 @@ import {
 } from 'expo-audio';
 
 import { usePlayerStore } from '@/features/player/store/player-store';
+import { usePlaybackSettings } from '@/features/settings/hooks/use-playback-settings';
 
 export function PlayerController() {
+  const activeBundleSlug = usePlayerStore((state) => state.activeBundleSlug);
   const queue = usePlayerStore((state) => state.queue);
   const currentIndex = usePlayerStore((state) => state.currentIndex);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const isInAffirmationGap = usePlayerStore((state) => state.isInAffirmationGap);
   const playbackRevision = usePlayerStore((state) => state.playbackRevision);
   const selectedMusicTrack = usePlayerStore((state) => state.selectedMusicTrack);
   const setTrackEnded = usePlayerStore((state) => state.setTrackEnded);
+  const restartQueue = usePlayerStore((state) => state.restartQueue);
+  const setGapActive = usePlayerStore((state) => state.setGapActive);
   const setPlaybackError = usePlayerStore((state) => state.setPlaybackError);
+  const { affirmationGapMs, musicVolume, voiceVolume, loopBundleForever } = usePlaybackSettings();
   const currentItem = queue[currentIndex] ?? null;
   const playerRef = useRef<AudioPlayer | null>(null);
   const musicPlayerRef = useRef<AudioPlayer | null>(null);
   const currentSourceRef = useRef<string | null>(null);
   const currentMusicSourceRef = useRef<string | null>(null);
   const previousDidJustFinishRef = useRef(false);
+  const gapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   if (!playerRef.current) {
     playerRef.current = createAudioPlayer(null);
@@ -43,12 +50,25 @@ export function PlayerController() {
     });
 
     return () => {
+      if (gapTimeoutRef.current) {
+        clearTimeout(gapTimeoutRef.current);
+        gapTimeoutRef.current = null;
+      }
+
       player.remove();
       musicPlayer.remove();
       playerRef.current = null;
       musicPlayerRef.current = null;
     };
   }, [musicPlayer, player]);
+
+  useEffect(() => {
+    player.volume = voiceVolume;
+  }, [player, voiceVolume]);
+
+  useEffect(() => {
+    musicPlayer.volume = musicVolume;
+  }, [musicPlayer, musicVolume]);
 
   useEffect(() => {
     const audioUrl = currentItem?.audioUrl ?? null;
@@ -107,8 +127,48 @@ export function PlayerController() {
       return;
     }
 
+    if (gapTimeoutRef.current) {
+      clearTimeout(gapTimeoutRef.current);
+      gapTimeoutRef.current = null;
+    }
+
+    const hasNextTrack = currentIndex < queue.length - 1;
+    const shouldLoopCurrentBundle = Boolean(activeBundleSlug) && loopBundleForever;
+
+    if ((hasNextTrack || shouldLoopCurrentBundle) && affirmationGapMs > 0) {
+      setGapActive(true);
+      gapTimeoutRef.current = setTimeout(() => {
+        gapTimeoutRef.current = null;
+        setGapActive(false);
+        if (!hasNextTrack && shouldLoopCurrentBundle) {
+          restartQueue();
+          return;
+        }
+
+        setTrackEnded();
+      }, affirmationGapMs);
+      return;
+    }
+
+    setGapActive(false);
+
+    if (!hasNextTrack && shouldLoopCurrentBundle) {
+      restartQueue();
+      return;
+    }
+
     setTrackEnded();
-  }, [status.didJustFinish]);
+  }, [
+    activeBundleSlug,
+    affirmationGapMs,
+    currentIndex,
+    loopBundleForever,
+    queue.length,
+    restartQueue,
+    setGapActive,
+    setTrackEnded,
+    status.didJustFinish,
+  ]);
 
   useEffect(() => {
     if (!status.error) {
@@ -147,7 +207,8 @@ export function PlayerController() {
     const shouldPlayMusic =
       Boolean(selectedMusicTrack?.audioUrl) &&
       Boolean(currentItem?.audioUrl) &&
-      isPlaying;
+      isPlaying &&
+      !isInAffirmationGap;
 
     if (shouldPlayMusic) {
       musicPlayer.play();
@@ -155,7 +216,21 @@ export function PlayerController() {
     }
 
     musicPlayer.pause();
-  }, [currentItem?.audioUrl, isPlaying, musicPlayer, selectedMusicTrack?.audioUrl]);
+  }, [currentItem?.audioUrl, isInAffirmationGap, isPlaying, musicPlayer, selectedMusicTrack?.audioUrl]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      return;
+    }
+
+    if (!gapTimeoutRef.current) {
+      return;
+    }
+
+    clearTimeout(gapTimeoutRef.current);
+    gapTimeoutRef.current = null;
+    setGapActive(false);
+  }, [isPlaying, setGapActive]);
 
   useEffect(() => {
     if (!musicStatus.error) {

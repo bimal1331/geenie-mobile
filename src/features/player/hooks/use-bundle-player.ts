@@ -24,12 +24,24 @@ export function useBundlePlayer(slug: string | null) {
       return;
     }
 
-    if (activeBundleSlug === bundle.slug && queue.length > 0) {
+    const hasMatchingQueue =
+      activeBundleSlug === bundle.slug &&
+      queue.length === bundle.items.length &&
+      queue.every((item, index) => {
+        const bundleItem = bundle.items[index];
+
+        return (
+          item.affirmationId === bundleItem?.affirmationId &&
+          item.audioUrl === bundleItem?.audioUrl
+        );
+      });
+
+    if (hasMatchingQueue) {
       return;
     }
 
-    playBundle(bundle);
-  }, [activeBundleSlug, bundle, playBundle, queue.length]);
+    playBundle(bundle, currentIndex);
+  }, [activeBundleSlug, bundle, currentIndex, playBundle, queue]);
 
   const totalAffirmations = queue.length;
 

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
+import { BottomSheetModal } from '@/components/bottom-sheet-modal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -55,151 +56,103 @@ export function MusicPickerSheet({ isOpen, onClose }: MusicPickerSheetProps) {
   }
 
   return (
-    <Modal animationType="slide" onRequestClose={onClose} transparent visible={isOpen}>
-      <View style={styles.overlay}>
-        <Pressable onPress={onClose} style={styles.backdrop} />
-        <ThemedView type="backgroundElement" style={styles.sheet}>
-          <View style={styles.sheetHeader}>
-            <View>
-              <ThemedText type="subtitle" style={styles.sheetTitle}>
-                Background music
-              </ThemedText>
-              <ThemedText themeColor="textSecondary">
-                Pick one reusable track while your bundle is playing.
-              </ThemedText>
-            </View>
-            <Pressable onPress={onClose} style={({ pressed }) => pressed && styles.pressed}>
-              <ThemedView type="backgroundSelected" style={styles.closeButton}>
-                <SymbolView name="xmark" tintColor={theme.text} size={16} />
+    <BottomSheetModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Background music"
+      description="Pick one reusable track while your bundle is playing."
+      sheetStyle={styles.sheet}>
+      <ScrollView
+        contentContainerStyle={styles.categoryRow}
+        horizontal
+        showsHorizontalScrollIndicator={false}>
+        {categories.map((category) => {
+          const isSelected = category.id === effectiveCategoryId;
+
+          return (
+            <Pressable
+              key={category.id}
+              onPress={() => setSelectedCategoryId(category.id)}
+              style={({ pressed }) => [pressed && styles.pressed]}>
+              <ThemedView
+                type={isSelected ? 'backgroundSelected' : 'background'}
+                style={styles.categoryChip}>
+                <ThemedText type="smallBold">{category.name}</ThemedText>
               </ThemedView>
             </Pressable>
-          </View>
+          );
+        })}
+      </ScrollView>
 
-          <ScrollView
-            contentContainerStyle={styles.categoryRow}
-            horizontal
-            showsHorizontalScrollIndicator={false}>
-            {categories.map((category) => {
-              const isSelected = category.id === effectiveCategoryId;
-
-              return (
-                <Pressable
-                  key={category.id}
-                  onPress={() => setSelectedCategoryId(category.id)}
-                  style={({ pressed }) => [pressed && styles.pressed]}>
-                  <ThemedView
-                    type={isSelected ? 'backgroundSelected' : 'background'}
-                    style={styles.categoryChip}>
-                    <ThemedText type="smallBold">{category.name}</ThemedText>
-                  </ThemedView>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
-          <View style={styles.actionsRow}>
-            <Pressable onPress={handleTurnOffMusic} style={({ pressed }) => pressed && styles.pressed}>
-              <ThemedText type="smallBold" themeColor="textSecondary">
-                No music
-              </ThemedText>
-            </Pressable>
-          </View>
-
-          {isLoading ? (
-            <ThemedView type="background" style={styles.stateCard}>
-              <ThemedText themeColor="textSecondary">Loading music...</ThemedText>
-            </ThemedView>
-          ) : null}
-
-          {!isLoading && error ? (
-            <ThemedView type="background" style={styles.stateCard}>
-              <ThemedText themeColor="textSecondary">{error}</ThemedText>
-            </ThemedView>
-          ) : null}
-
-          {!isLoading && !error && activeCategory ? (
-            <ScrollView
-              contentContainerStyle={styles.trackList}
-              showsVerticalScrollIndicator={false}>
-              {activeTracks.length === 0 ? (
-                <ThemedView type="background" style={styles.stateCard}>
-                  <ThemedText themeColor="textSecondary">
-                    No tracks are available in this category yet.
-                  </ThemedText>
-                </ThemedView>
-              ) : null}
-
-              {activeTracks.map((track) => {
-                const isSelected = selectedMusicTrack?.id === track.id;
-
-                return (
-                  <Pressable
-                    key={track.id}
-                    onPress={() => handleSelectTrack(track.id)}
-                    style={({ pressed }) => [pressed && styles.pressed]}>
-                    <ThemedView
-                      type={isSelected ? 'backgroundSelected' : 'background'}
-                      style={styles.trackCard}>
-                      <View style={styles.trackTopline}>
-                        <ThemedText type="smallBold" numberOfLines={1} style={styles.trackTitle}>
-                          {track.title}
-                        </ThemedText>
-                        {isSelected ? (
-                          <SymbolView name="checkmark.circle.fill" tintColor={theme.text} size={18} />
-                        ) : null}
-                      </View>
-                      {track.description ? (
-                        <ThemedText numberOfLines={2} themeColor="textSecondary">
-                          {track.description}
-                        </ThemedText>
-                      ) : null}
-                    </ThemedView>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          ) : null}
-        </ThemedView>
+      <View style={styles.actionsRow}>
+        <Pressable onPress={handleTurnOffMusic} style={({ pressed }) => pressed && styles.pressed}>
+          <ThemedText type="smallBold" themeColor="textSecondary">
+            No music
+          </ThemedText>
+        </Pressable>
       </View>
-    </Modal>
+
+      {isLoading ? (
+        <ThemedView type="background" style={styles.stateCard}>
+          <ThemedText themeColor="textSecondary">Loading music...</ThemedText>
+        </ThemedView>
+      ) : null}
+
+      {!isLoading && error ? (
+        <ThemedView type="background" style={styles.stateCard}>
+          <ThemedText themeColor="textSecondary">{error}</ThemedText>
+        </ThemedView>
+      ) : null}
+
+      {!isLoading && !error && activeCategory ? (
+        <ScrollView
+          contentContainerStyle={styles.trackList}
+          showsVerticalScrollIndicator={false}>
+          {activeTracks.length === 0 ? (
+            <ThemedView type="background" style={styles.stateCard}>
+              <ThemedText themeColor="textSecondary">
+                No tracks are available in this category yet.
+              </ThemedText>
+            </ThemedView>
+          ) : null}
+
+          {activeTracks.map((track) => {
+            const isSelected = selectedMusicTrack?.id === track.id;
+
+            return (
+              <Pressable
+                key={track.id}
+                onPress={() => handleSelectTrack(track.id)}
+                style={({ pressed }) => [pressed && styles.pressed]}>
+                <ThemedView
+                  type={isSelected ? 'backgroundSelected' : 'background'}
+                  style={styles.trackCard}>
+                  <View style={styles.trackTopline}>
+                    <ThemedText type="smallBold" numberOfLines={1} style={styles.trackTitle}>
+                      {track.title}
+                    </ThemedText>
+                    {isSelected ? (
+                      <SymbolView name="checkmark.circle.fill" tintColor={theme.text} size={18} />
+                    ) : null}
+                  </View>
+                  {track.description ? (
+                    <ThemedText numberOfLines={2} themeColor="textSecondary">
+                      {track.description}
+                    </ThemedText>
+                  ) : null}
+                </ThemedView>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      ) : null}
+    </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.34)',
-  },
   sheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.four,
-    paddingBottom: Spacing.four,
-    gap: Spacing.three,
     minHeight: '48%',
-    maxHeight: '78%',
-  },
-  sheetHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: Spacing.three,
-  },
-  sheetTitle: {
-    fontSize: 28,
-    lineHeight: 34,
-  },
-  closeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 999,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   categoryRow: {
     gap: Spacing.two,

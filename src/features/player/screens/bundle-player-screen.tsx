@@ -10,6 +10,7 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useBundlePlayer } from '@/features/player/hooks/use-bundle-player';
 import { MusicPickerSheet } from '@/features/player/components/music-picker-sheet';
+import { PlaybackSettingsSheet } from '@/features/player/components/playback-settings-sheet';
 import { usePlayerStore } from '@/features/player/store/player-store';
 
 type BundlePlayerScreenProps = {
@@ -20,6 +21,7 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
   const router = useRouter();
   const theme = useTheme();
   const [isMusicPickerOpen, setIsMusicPickerOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const selectedMusicTrack = usePlayerStore((state) => state.selectedMusicTrack);
   const {
     isLoading,
@@ -52,15 +54,25 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
         </Pressable>
       }
       headerRight={
-        <Pressable
-          onPress={() => setIsMusicPickerOpen(true)}
-          style={({ pressed }) => pressed && styles.pressed}>
-          <ThemedView
-            type={selectedMusicTrack ? 'backgroundSelected' : 'backgroundElement'}
-            style={styles.musicButton}>
-            <SymbolView name="music.note" tintColor={theme.text} size={18} />
-          </ThemedView>
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable
+            onPress={() => setIsMusicPickerOpen(true)}
+            style={({ pressed }) => pressed && styles.pressed}>
+            <ThemedView
+              type={selectedMusicTrack ? 'backgroundSelected' : 'backgroundElement'}
+              style={styles.iconButton}>
+              <SymbolView name="music.note" tintColor={theme.text} size={18} />
+            </ThemedView>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setIsSettingsOpen(true)}
+            style={({ pressed }) => pressed && styles.pressed}>
+            <ThemedView type="backgroundElement" style={styles.iconButton}>
+              <SymbolView name="slider.horizontal.3" tintColor={theme.text} size={18} />
+            </ThemedView>
+          </Pressable>
+        </View>
       }
       eyebrow="Guided session"
       title={session.bundleTitle}
@@ -157,6 +169,7 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
         </>
       ) : null}
       <MusicPickerSheet isOpen={isMusicPickerOpen} onClose={() => setIsMusicPickerOpen(false)} />
+      <PlaybackSettingsSheet isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </AppScreen>
   );
 }
@@ -170,8 +183,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  musicButton: {
-    alignSelf: 'flex-end',
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  iconButton: {
     borderRadius: 999,
     width: 40,
     height: 40,

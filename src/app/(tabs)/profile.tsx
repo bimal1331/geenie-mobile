@@ -13,7 +13,8 @@ export default function ProfileScreen() {
         title="A steady control center"
         description="This is where we can keep identity, playback defaults, notifications, membership, and other personal controls separate from discovery and playback.">
         <ThemedText themeColor="textSecondary">
-          Guests can keep exploring freely. Signed-in features will grow here over time.
+          Guests can keep exploring freely. Playback controls now live directly on the player
+          screen, while signed-in features will grow here over time.
         </ThemedText>
       </SectionCard>
     </AppScreen>

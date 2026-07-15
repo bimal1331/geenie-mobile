@@ -19,6 +19,7 @@ type PlayerStoreState = {
   queue: PlayerQueueItem[];
   currentIndex: number;
   isPlaying: boolean;
+  isInAffirmationGap: boolean;
   playbackError: string | null;
   playbackRevision: number;
   selectedMusicTrack: MusicTrack | null;
@@ -39,6 +40,7 @@ type PlayerStoreActions = {
   clearPlayer: () => void;
   setPlaybackError: (message: string | null) => void;
   setTrackEnded: () => void;
+  setGapActive: (value: boolean) => void;
   selectMusicTrack: (track: MusicTrack) => void;
   clearMusicTrack: () => void;
 };
@@ -63,6 +65,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   queue: [],
   currentIndex: 0,
   isPlaying: false,
+  isInAffirmationGap: false,
   playbackError: null,
   playbackRevision: 0,
   selectedMusicTrack: null,
@@ -78,6 +81,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       queue,
       currentIndex: safeIndex,
       isPlaying: queue.length > 0,
+      isInAffirmationGap: false,
       playbackError: null,
       playbackRevision: 0,
     });
@@ -91,13 +95,14 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       queue: [toQueueItem(item)],
       currentIndex: 0,
       isPlaying: true,
+      isInAffirmationGap: false,
       playbackError: null,
       playbackRevision: 0,
     });
   },
 
   pausePlayback: () => {
-    set({ isPlaying: false });
+    set({ isPlaying: false, isInAffirmationGap: false });
   },
 
   resumePlayback: () => {
@@ -110,6 +115,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({
       currentIndex: currentIndex >= queue.length - 1 ? 0 : currentIndex,
       isPlaying: true,
+      isInAffirmationGap: false,
       playbackError: null,
       playbackRevision:
         currentIndex >= queue.length - 1 ? get().playbackRevision + 1 : get().playbackRevision,
@@ -135,6 +141,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({
       currentIndex: Math.min(currentIndex + 1, queue.length - 1),
       isPlaying: true,
+      isInAffirmationGap: false,
       playbackError: null,
     });
   },
@@ -149,6 +156,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({
       currentIndex: Math.max(currentIndex - 1, 0),
       isPlaying,
+      isInAffirmationGap: false,
       playbackError: null,
     });
   },
@@ -159,6 +167,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({
       currentIndex: 0,
       isPlaying: queue.length > 0,
+      isInAffirmationGap: false,
       playbackError: null,
       playbackRevision: get().playbackRevision + 1,
     });
@@ -172,6 +181,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       queue: [],
       currentIndex: 0,
       isPlaying: false,
+      isInAffirmationGap: false,
       playbackError: null,
       playbackRevision: 0,
     });
@@ -185,19 +195,26 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     const { queue, currentIndex } = get();
 
     if (queue.length === 0) {
-      set({ isPlaying: false });
+      set({ isPlaying: false, isInAffirmationGap: false });
       return;
     }
 
     if (currentIndex >= queue.length - 1) {
-      set({ isPlaying: false });
+      set({ isPlaying: false, isInAffirmationGap: false });
       return;
     }
 
     set({
       currentIndex: currentIndex + 1,
       isPlaying: true,
+      isInAffirmationGap: false,
       playbackError: null,
+    });
+  },
+
+  setGapActive: (value) => {
+    set({
+      isInAffirmationGap: value,
     });
   },
 

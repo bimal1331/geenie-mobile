@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { getBundleDetail } from '@/features/bundles/services/bundle-service';
 import { BundleDetail } from '@/features/bundles/types';
+import { usePlaybackSettings } from '@/features/settings/hooks/use-playback-settings';
 
 type UseBundleDetailState = {
   bundle: BundleDetail | null;
@@ -10,6 +11,7 @@ type UseBundleDetailState = {
 };
 
 export function useBundleDetail(slug: string | null) {
+  const { selectedVoice } = usePlaybackSettings();
   const [state, setState] = useState<UseBundleDetailState>({
     bundle: null,
     isLoading: true,
@@ -30,7 +32,11 @@ export function useBundleDetail(slug: string | null) {
       }
 
       try {
-        const bundle = await getBundleDetail(slug);
+        const bundle = await getBundleDetail(slug, {
+          languageCode: selectedVoice.languageCode,
+          variantKey: selectedVoice.variantKey,
+          providerVoiceId: selectedVoice.providerVoiceId,
+        });
 
         if (!isMounted) {
           return;
@@ -66,7 +72,7 @@ export function useBundleDetail(slug: string | null) {
     return () => {
       isMounted = false;
     };
-  }, [slug]);
+  }, [selectedVoice.languageCode, selectedVoice.providerVoiceId, selectedVoice.variantKey, slug]);
 
   return state;
 }

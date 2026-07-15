@@ -1,4 +1,5 @@
 import { BundlePlaybackVariantKey } from '@/features/bundles/types';
+import { DEFAULT_PLAYBACK_SETTINGS } from '@/features/settings/config';
 
 export type BundlePlaybackSelection = {
   languageCode: string;
@@ -7,7 +8,7 @@ export type BundlePlaybackSelection = {
 };
 
 export const DEFAULT_BUNDLE_PLAYBACK_SELECTION: BundlePlaybackSelection = {
-  languageCode: 'en',
-  variantKey: 'male',
-  providerVoiceId: 'UBykp1rVQYqEYqCegiej',
+  languageCode: DEFAULT_PLAYBACK_SETTINGS.selectedVoice.languageCode,
+  variantKey: DEFAULT_PLAYBACK_SETTINGS.selectedVoice.variantKey,
+  providerVoiceId: DEFAULT_PLAYBACK_SETTINGS.selectedVoice.providerVoiceId,
 };
