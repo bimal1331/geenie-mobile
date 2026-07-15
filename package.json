@@ -37,7 +37,12 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
+    "env:sim": "node ./scripts/select-env.js simulator",
+    "env:device": "node ./scripts/select-env.js device",
     "start": "expo start",
+    "start:sim": "node ./scripts/select-env.js simulator && expo start",
+    "start:device": "node ./scripts/select-env.js device && expo start",
+    "start:device-client": "node ./scripts/select-env.js device && expo start --dev-client",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
