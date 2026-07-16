@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { getSupabaseConfig } from '@/services/supabase/config';
-import { secureStoreAdapter } from '@/services/supabase/storage';
+import { authStorageAdapter } from '@/services/supabase/storage';
 
 let supabaseClient: SupabaseClient | null = null;
 
@@ -17,7 +17,7 @@ export function getSupabaseClient() {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
-      storage: secureStoreAdapter,
+      storage: authStorageAdapter,
     },
   });
 
