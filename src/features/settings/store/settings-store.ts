@@ -6,9 +6,11 @@ import {
   DEFAULT_PLAYBACK_SETTINGS,
 } from '@/features/settings/config';
 import { playbackSettingsStorage } from '@/features/settings/services/settings-storage';
-import type { PlaybackVoiceOption } from '@/features/settings/types';
+import { normalizePlaybackSettings } from '@/features/settings/services/user-settings-service';
+import type { PlaybackSettings, PlaybackVoiceOption } from '@/features/settings/types';
 
 type SettingsStoreState = {
+  // True once persisted local settings have been restored into the store.
   hasHydrated: boolean;
   affirmationGapMs: number;
   musicVolume: number;
@@ -20,6 +22,7 @@ type SettingsStoreState = {
   setVoiceVolume: (value: number) => void;
   setLoopBundleForever: (value: boolean) => void;
   setSelectedVoice: (value: PlaybackVoiceOption) => void;
+  replaceSettings: (value: PlaybackSettings) => void;
   setHasHydrated: (value: boolean) => void;
 };
 
@@ -69,6 +72,17 @@ export const useSettingsStore = create<SettingsStoreState>()(
           selectedVoice: resolveSelectedVoice(value),
         });
       },
+      replaceSettings: (value) => {
+        const normalized = normalizePlaybackSettings(value);
+
+        set({
+          affirmationGapMs: normalized.affirmationGapMs,
+          musicVolume: normalized.musicVolume,
+          voiceVolume: normalized.voiceVolume,
+          loopBundleForever: normalized.loopBundleForever,
+          selectedVoice: normalized.selectedVoice,
+        });
+      },
       setHasHydrated: (value) => {
         set({
           hasHydrated: value,
@@ -85,6 +99,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
         loopBundleForever: state.loopBundleForever,
         selectedVoice: state.selectedVoice,
       }),
+      // Mark hydration complete after Zustand loads the saved local snapshot.
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },

@@ -4,6 +4,7 @@ import { StyleSheet, View, useColorScheme } from 'react-native';
 
 import { AuthProvider } from '@/features/auth/components/auth-provider';
 import { PlayerController } from '@/features/player/components/player-controller';
+import { SettingsSyncProvider } from '@/features/settings/components/settings-sync-provider';
 
 SplashScreen.preventAutoHideAsync();
 void SplashScreen.hideAsync();
@@ -14,6 +15,7 @@ export default function TabLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <View style={styles.root}>
         <AuthProvider />
+        <SettingsSyncProvider />
         <PlayerController />
         <Stack screenOptions={{ headerShown: false }} />
       </View>
