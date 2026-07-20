@@ -62,7 +62,7 @@ export function SettingsSyncProvider() {
       return;
     }
 
-    const userId = session?.user?.id ?? null;
+    const userId = session?.userId ?? null;
 
     if (!userId) {
       syncedUserIdRef.current = null;
@@ -135,10 +135,10 @@ export function SettingsSyncProvider() {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, currentSettings, hasHydrated, replaceSettings, serializedSettings, session?.user?.id]);
+  }, [authStatus, currentSettings, hasHydrated, replaceSettings, serializedSettings, session?.userId]);
 
   useEffect(() => {
-    const userId = session?.user?.id ?? null;
+    const userId = session?.userId ?? null;
 
     if (!userId || !hasHydrated || authStatus !== 'ready') {
       return;
@@ -183,7 +183,7 @@ export function SettingsSyncProvider() {
         saveTimeoutRef.current = null;
       }
     };
-  }, [authStatus, currentSettings, hasHydrated, serializedSettings, session?.user?.id]);
+  }, [authStatus, currentSettings, hasHydrated, serializedSettings, session?.userId]);
 
   return null;
 }

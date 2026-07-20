@@ -1,16 +1,15 @@
-import type { Session } from '@supabase/supabase-js';
 import { create } from 'zustand';
 
-import type { AppUserProfile } from '@/features/auth/types';
+import type { AppAuthSession, AppUserProfile } from '@/features/auth/types';
 
 type AuthStatus = 'loading' | 'ready';
 
 type AuthStoreState = {
   status: AuthStatus;
-  session: Session | null;
+  session: AppAuthSession | null;
   profile: AppUserProfile | null;
   setLoading: () => void;
-  setSession: (session: Session | null, profile: AppUserProfile | null) => void;
+  setSession: (session: AppAuthSession | null, profile: AppUserProfile | null) => void;
 };
 
 export const useAuthStore = create<AuthStoreState>((set) => ({

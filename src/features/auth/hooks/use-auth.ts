@@ -13,8 +13,8 @@ export function useAuth() {
       session,
       profile,
       isLoading: status === 'loading',
-      isAuthenticated: Boolean(session?.user),
-      isGuest: !session?.user,
+      isAuthenticated: Boolean(session?.userId),
+      isGuest: !session?.userId,
     }),
     [profile, session, status],
   );

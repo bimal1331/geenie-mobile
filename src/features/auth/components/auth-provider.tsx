@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
-import type { Session } from '@supabase/supabase-js';
 
 import { useAuthStore } from '@/features/auth/store/auth-store';
 import { fetchCurrentUserProfile, getCurrentSession, onAuthStateChanged } from '@/features/auth/services/auth-service';
+import type { AppAuthSession } from '@/features/auth/types';
 
-async function resolveProfileForSession(session: Session | null) {
-  if (!session?.user) {
+async function resolveProfileForSession(session: AppAuthSession | null) {
+  if (!session?.userId) {
     return null;
   }
 
-  return fetchCurrentUserProfile(session.user);
+  return fetchCurrentUserProfile(session);
 }
 
 export function AuthProvider() {
@@ -19,7 +19,7 @@ export function AuthProvider() {
   useEffect(() => {
     let isMounted = true;
 
-    async function syncSession(session: Session | null) {
+    async function syncSession(session: AppAuthSession | null) {
       if (!isMounted) {
         return;
       }
@@ -63,7 +63,26 @@ export function AuthProvider() {
         }
       });
 
-    const subscription = onAuthStateChanged((_event, session) => {
+    const subscription = onAuthStateChanged((event, session) => {
+      if (!isMounted) {
+        return;
+      }
+
+      if (event === 'SIGNED_OUT') {
+        setSession(null, null);
+        return;
+      }
+
+      if (event === 'TOKEN_REFRESHED') {
+        const currentState = useAuthStore.getState();
+        const isSameUser = currentState.session?.userId && currentState.session.userId === session?.userId;
+
+        if (isSameUser) {
+          setSession(session, currentState.profile);
+          return;
+        }
+      }
+
       void syncSession(session);
     });
 
