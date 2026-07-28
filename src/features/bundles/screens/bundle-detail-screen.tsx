@@ -80,7 +80,14 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
       {!isLoading &&
         !error &&
         bundle?.items.map((item) => (
-          <ThemedView key={`${item.affirmationId}-${item.orderIndex}`} type="backgroundElement" style={styles.itemCard}>
+          <ThemedView
+            key={`${item.affirmationId}-${item.orderIndex}`}
+            style={[
+              styles.itemRow,
+              {
+                borderBottomColor: theme.backgroundSelected,
+              },
+            ]}>
             <ThemedText style={styles.itemText}>{item.text}</ThemedText>
           </ThemedView>
         ))}
@@ -111,11 +118,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     alignSelf: 'flex-start',
   },
-  itemCard: {
-    borderRadius: Spacing.four,
-    paddingHorizontal: Spacing.four,
+  itemRow: {
     paddingVertical: Spacing.four,
-    gap: Spacing.two,
+    borderBottomWidth: 1,
   },
   itemText: {
     fontSize: 18,
