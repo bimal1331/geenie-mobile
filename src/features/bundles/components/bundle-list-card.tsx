@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -14,6 +15,18 @@ export function BundleListCard({ bundle, onPress }: BundleListCardProps) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => pressed && styles.pressed}>
       <ThemedView type="backgroundElement" style={styles.card}>
+        {bundle.coverImageUrl ? (
+          <Image
+            contentFit="cover"
+            source={{ uri: bundle.coverImageUrl }}
+            style={styles.coverImage}
+          />
+        ) : (
+          <ThemedView type="backgroundSelected" style={styles.coverFallback}>
+            <ThemedText type="smallBold">Bundle</ThemedText>
+          </ThemedView>
+        )}
+
         <View style={styles.headerRow}>
           {bundle.isPremium ? (
             <ThemedView type="backgroundSelected" style={styles.badge}>
@@ -46,9 +59,21 @@ export function BundleListCard({ bundle, onPress }: BundleListCardProps) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: Spacing.four,
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.four,
     gap: Spacing.two,
+  },
+  coverImage: {
+    width: '100%',
+    height: 224,
+    borderRadius: Spacing.four,
+  },
+  coverFallback: {
+    width: '100%',
+    height: 224,
+    borderRadius: Spacing.four,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pressed: {
     opacity: 0.86,
