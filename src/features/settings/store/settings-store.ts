@@ -17,11 +17,13 @@ type SettingsStoreState = {
   voiceVolume: number;
   loopBundleForever: boolean;
   selectedVoice: PlaybackVoiceOption;
+  selectedMusicTrackId: string | null;
   setAffirmationGapMs: (value: number) => void;
   setMusicVolume: (value: number) => void;
   setVoiceVolume: (value: number) => void;
   setLoopBundleForever: (value: boolean) => void;
   setSelectedVoice: (value: PlaybackVoiceOption) => void;
+  setSelectedMusicTrackId: (value: string | null) => void;
   replaceSettings: (value: PlaybackSettings) => void;
   setHasHydrated: (value: boolean) => void;
 };
@@ -47,6 +49,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
       voiceVolume: DEFAULT_PLAYBACK_SETTINGS.voiceVolume,
       loopBundleForever: DEFAULT_PLAYBACK_SETTINGS.loopBundleForever,
       selectedVoice: DEFAULT_PLAYBACK_SETTINGS.selectedVoice,
+      selectedMusicTrackId: DEFAULT_PLAYBACK_SETTINGS.selectedMusicTrackId,
       setAffirmationGapMs: (value) => {
         set({
           affirmationGapMs: Math.max(0, Math.round(value)),
@@ -72,6 +75,11 @@ export const useSettingsStore = create<SettingsStoreState>()(
           selectedVoice: resolveSelectedVoice(value),
         });
       },
+      setSelectedMusicTrackId: (value) => {
+        set({
+          selectedMusicTrackId: value?.trim() || null,
+        });
+      },
       replaceSettings: (value) => {
         const normalized = normalizePlaybackSettings(value);
 
@@ -81,6 +89,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
           voiceVolume: normalized.voiceVolume,
           loopBundleForever: normalized.loopBundleForever,
           selectedVoice: normalized.selectedVoice,
+          selectedMusicTrackId: normalized.selectedMusicTrackId,
         });
       },
       setHasHydrated: (value) => {
@@ -98,6 +107,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
         voiceVolume: state.voiceVolume,
         loopBundleForever: state.loopBundleForever,
         selectedVoice: state.selectedVoice,
+        selectedMusicTrackId: state.selectedMusicTrackId,
       }),
       // Mark hydration complete after Zustand loads the saved local snapshot.
       onRehydrateStorage: () => (state) => {

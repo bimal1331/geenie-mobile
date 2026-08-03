@@ -16,6 +16,7 @@ function serializePlaybackSettings(settings: PlaybackSettings) {
     voiceVolume: settings.voiceVolume,
     loopBundleForever: settings.loopBundleForever,
     selectedVoice: settings.selectedVoice,
+    selectedMusicTrackId: settings.selectedMusicTrackId,
   });
 }
 
@@ -28,6 +29,7 @@ export function SettingsSyncProvider() {
   const voiceVolume = useSettingsStore((state) => state.voiceVolume);
   const loopBundleForever = useSettingsStore((state) => state.loopBundleForever);
   const selectedVoice = useSettingsStore((state) => state.selectedVoice);
+  const selectedMusicTrackId = useSettingsStore((state) => state.selectedMusicTrackId);
   const replaceSettings = useSettingsStore((state) => state.replaceSettings);
 
   // These refs coordinate initial user-level sync so we do not overwrite server data
@@ -46,8 +48,16 @@ export function SettingsSyncProvider() {
         voiceVolume,
         loopBundleForever,
         selectedVoice,
+        selectedMusicTrackId,
       }),
-    [affirmationGapMs, loopBundleForever, musicVolume, selectedVoice, voiceVolume],
+    [
+      affirmationGapMs,
+      loopBundleForever,
+      musicVolume,
+      selectedMusicTrackId,
+      selectedVoice,
+      voiceVolume,
+    ],
   );
 
   const serializedSettings = useMemo(

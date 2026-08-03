@@ -6,8 +6,10 @@ import {
   type AudioPlayer,
 } from 'expo-audio';
 
+import { useMusicLibrary } from '@/features/music/hooks/use-music-library';
 import { usePlayerStore } from '@/features/player/store/player-store';
 import { usePlaybackSettings } from '@/features/settings/hooks/use-playback-settings';
+import { useSettingsStore } from '@/features/settings/store/settings-store';
 
 export function PlayerController() {
   const activeBundleSlug = usePlayerStore((state) => state.activeBundleSlug);
@@ -17,11 +19,21 @@ export function PlayerController() {
   const isInAffirmationGap = usePlayerStore((state) => state.isInAffirmationGap);
   const playbackRevision = usePlayerStore((state) => state.playbackRevision);
   const selectedMusicTrack = usePlayerStore((state) => state.selectedMusicTrack);
+  const selectMusicTrack = usePlayerStore((state) => state.selectMusicTrack);
+  const clearMusicTrack = usePlayerStore((state) => state.clearMusicTrack);
   const setTrackEnded = usePlayerStore((state) => state.setTrackEnded);
   const restartQueue = usePlayerStore((state) => state.restartQueue);
   const setGapActive = usePlayerStore((state) => state.setGapActive);
   const setPlaybackError = usePlayerStore((state) => state.setPlaybackError);
-  const { affirmationGapMs, musicVolume, voiceVolume, loopBundleForever } = usePlaybackSettings();
+  const setSelectedMusicTrackId = useSettingsStore((state) => state.setSelectedMusicTrackId);
+  const {
+    affirmationGapMs,
+    musicVolume,
+    voiceVolume,
+    loopBundleForever,
+    selectedMusicTrackId,
+  } = usePlaybackSettings();
+  const { categories: musicCategories } = useMusicLibrary();
   const currentItem = queue[currentIndex] ?? null;
   const playerRef = useRef<AudioPlayer | null>(null);
   const musicPlayerRef = useRef<AudioPlayer | null>(null);
@@ -243,6 +255,49 @@ export function PlayerController() {
       });
     }
   }, [musicStatus.error, selectedMusicTrack]);
+
+  useEffect(() => {
+    if (!selectedMusicTrackId) {
+      if (selectedMusicTrack) {
+        clearMusicTrack();
+      }
+
+      return;
+    }
+
+    const restoredTrack = musicCategories
+      .flatMap((category) => category.tracks)
+      .find((track) => track.id === selectedMusicTrackId);
+
+    if (!restoredTrack) {
+      return;
+    }
+
+    if (selectedMusicTrack?.id === restoredTrack.id) {
+      return;
+    }
+
+    selectMusicTrack(restoredTrack);
+  }, [
+    clearMusicTrack,
+    musicCategories,
+    selectMusicTrack,
+    selectedMusicTrack,
+    selectedMusicTrackId,
+  ]);
+
+  useEffect(() => {
+    if (!selectedMusicTrack) {
+      return;
+    }
+
+    if (selectedMusicTrackId === selectedMusicTrack.id) {
+      return;
+    }
+
+    // Clear stale persisted music selections when the chosen track no longer exists.
+    setSelectedMusicTrackId(null);
+  }, [selectedMusicTrack, selectedMusicTrackId, setSelectedMusicTrackId]);
 
   return null;
 }

@@ -9,6 +9,7 @@ type UserSettingsRow = {
   voice_volume: number;
   loop_bundle: boolean;
   selected_voice_provider_id: string;
+  selected_music_track_id: string | null;
 };
 
 function clampUnitValue(value: number) {
@@ -42,6 +43,7 @@ export function normalizePlaybackSettings(settings: PlaybackSettings): PlaybackS
     voiceVolume: clampUnitValue(settings.voiceVolume),
     loopBundleForever: settings.loopBundleForever,
     selectedVoice: resolveSelectedVoice(settings.selectedVoice),
+    selectedMusicTrackId: settings.selectedMusicTrackId?.trim() || null,
   };
 }
 
@@ -52,6 +54,7 @@ function mapRowToPlaybackSettings(row: UserSettingsRow): PlaybackSettings {
     voiceVolume: row.voice_volume,
     loopBundleForever: row.loop_bundle,
     selectedVoice: resolveSelectedVoiceByProviderId(row.selected_voice_provider_id),
+    selectedMusicTrackId: row.selected_music_track_id,
   });
 }
 
@@ -65,6 +68,7 @@ function mapPlaybackSettingsToRow(userId: string, settings: PlaybackSettings): U
     voice_volume: normalized.voiceVolume,
     loop_bundle: normalized.loopBundleForever,
     selected_voice_provider_id: normalized.selectedVoice.providerVoiceId,
+    selected_music_track_id: normalized.selectedMusicTrackId,
   };
 }
 
@@ -78,7 +82,8 @@ export async function fetchUserPlaybackSettings(userId: string): Promise<Playbac
       music_volume,
       voice_volume,
       loop_bundle,
-      selected_voice_provider_id
+      selected_voice_provider_id,
+      selected_music_track_id
     `)
     .eq('user_id', userId)
     .maybeSingle();

@@ -9,6 +9,7 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useMusicLibrary } from '@/features/music/hooks/use-music-library';
 import { usePlayerStore } from '@/features/player/store/player-store';
+import { useSettingsStore } from '@/features/settings/store/settings-store';
 
 type MusicPickerSheetProps = {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export function MusicPickerSheet({ isOpen, onClose }: MusicPickerSheetProps) {
   const selectedMusicTrack = usePlayerStore((state) => state.selectedMusicTrack);
   const selectMusicTrack = usePlayerStore((state) => state.selectMusicTrack);
   const clearMusicTrack = usePlayerStore((state) => state.clearMusicTrack);
+  const setSelectedMusicTrackId = useSettingsStore((state) => state.setSelectedMusicTrackId);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   const effectiveCategoryId = selectedCategoryId ?? categories[0]?.id ?? null;
@@ -47,11 +49,13 @@ export function MusicPickerSheet({ isOpen, onClose }: MusicPickerSheetProps) {
     }
 
     selectMusicTrack(selectedTrack);
+    setSelectedMusicTrackId(selectedTrack.id);
     onClose();
   }
 
   function handleTurnOffMusic() {
     clearMusicTrack();
+    setSelectedMusicTrackId(null);
     onClose();
   }
 

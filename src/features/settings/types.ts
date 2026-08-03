@@ -13,4 +13,5 @@ export type PlaybackSettings = {
   voiceVolume: number;
   loopBundleForever: boolean;
   selectedVoice: PlaybackVoiceOption;
+  selectedMusicTrackId: string | null;
 };

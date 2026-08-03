@@ -15,4 +15,5 @@ export const DEFAULT_PLAYBACK_SETTINGS: PlaybackSettings = {
   voiceVolume: 1,
   loopBundleForever: false,
   selectedVoice: AVAILABLE_PLAYBACK_VOICES[0],
+  selectedMusicTrackId: null,
 };
