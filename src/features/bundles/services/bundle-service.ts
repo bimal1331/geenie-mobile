@@ -1,4 +1,4 @@
-import { apiGet } from '@/services/api/client';
+import { apiDelete, apiGet, apiPost } from '@/services/api/client';
 
 import { BundleDetail, BundleSummary } from '@/features/bundles/types';
 import {
@@ -22,6 +22,29 @@ export async function getBundleDetail(
   });
   const response = await apiGet<{ bundle: BundleDetail }>(
     `/api/mobile/bundles/${encodeURIComponent(slug)}?${searchParams.toString()}`,
+    { auth: 'optional' },
   );
   return response.bundle;
+}
+
+export async function listSavedBundles(): Promise<BundleSummary[]> {
+  const response = await apiGet<{ bundles: BundleSummary[] }>('/api/mobile/library/bundles', {
+    auth: 'required',
+  });
+  return response.bundles;
+}
+
+export async function saveBundleToLibrary(slug: string) {
+  return apiPost<{ message: string }>(`/api/mobile/library/bundles/${encodeURIComponent(slug)}`, {
+    auth: 'required',
+  });
+}
+
+export async function removeBundleFromLibrary(slug: string) {
+  return apiDelete<{ message: string }>(
+    `/api/mobile/library/bundles/${encodeURIComponent(slug)}`,
+    {
+      auth: 'required',
+    },
+  );
 }

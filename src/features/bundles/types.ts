@@ -23,5 +23,6 @@ export type BundleDetailItem = {
 };
 
 export type BundleDetail = BundleSummary & {
+  isSaved?: boolean;
   items: BundleDetailItem[];
 };

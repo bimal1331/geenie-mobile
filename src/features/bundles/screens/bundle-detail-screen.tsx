@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 
@@ -5,10 +6,15 @@ import { AppScreen } from '@/components/app-screen';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useAuthStore } from '@/features/auth/store/auth-store';
 import { useBundleDetail } from '@/features/bundles/hooks/use-bundle-detail';
+import {
+  removeBundleFromLibrary,
+  saveBundleToLibrary,
+} from '@/features/bundles/services/bundle-service';
 import { usePlayerStore } from '@/features/player/store/player-store';
 import { useTheme } from '@/hooks/use-theme';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 type BundleDetailScreenProps = {
   slug: string | null;
@@ -19,6 +25,15 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
   const theme = useTheme();
   const { bundle, isLoading, error } = useBundleDetail(slug);
   const playBundle = usePlayerStore((state) => state.playBundle);
+  const session = useAuthStore((state) => state.session);
+  const authStatus = useAuthStore((state) => state.status);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsSaved(Boolean(bundle?.isSaved));
+  }, [bundle?.id, bundle?.isSaved]);
 
   function handleBack() {
     if (router.canGoBack()) {
@@ -27,6 +42,36 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
     }
 
     router.replace('/explore');
+  }
+
+  async function handleToggleSaved() {
+    if (!bundle) {
+      return;
+    }
+
+    if (!session) {
+      router.push('/profile');
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      if (isSaved) {
+        await removeBundleFromLibrary(bundle.slug);
+        setIsSaved(false);
+      } else {
+        await saveBundleToLibrary(bundle.slug);
+        setIsSaved(true);
+      }
+    } catch (caughtError) {
+      setSaveError(
+        caughtError instanceof Error ? caughtError.message : 'Unable to update your library.',
+      );
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -65,16 +110,43 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
       ) : null}
 
       {!isLoading && !error && bundle && bundle.items.length > 0 ? (
-        <Pressable
-          onPress={() => {
-            playBundle(bundle);
-            router.push(`/player/${bundle.slug}`);
-          }}
-          style={({ pressed }) => pressed && styles.pressed}>
-          <ThemedView type="backgroundSelected" style={styles.startButton}>
-            <ThemedText type="smallBold">Play</ThemedText>
-          </ThemedView>
-        </Pressable>
+        <View style={styles.actionRow}>
+          <Pressable
+            onPress={() => {
+              playBundle(bundle);
+              router.push(`/player/${bundle.slug}`);
+            }}
+            style={({ pressed }) => pressed && styles.pressed}>
+            <ThemedView type="backgroundSelected" style={styles.startButton}>
+              <ThemedText type="smallBold">Play</ThemedText>
+            </ThemedView>
+          </Pressable>
+
+          <Pressable
+            disabled={authStatus === 'loading' || isSaving}
+            onPress={handleToggleSaved}
+            style={({ pressed }) => pressed && styles.pressed}>
+            <ThemedView
+              type={isSaved ? 'backgroundSelected' : 'backgroundElement'}
+              style={styles.saveButton}>
+              <ThemedText type="smallBold">
+                {!session
+                  ? 'Sign in to save'
+                  : isSaving
+                    ? 'Saving...'
+                    : isSaved
+                      ? 'Remove from Library'
+                      : 'Save to Library'}
+              </ThemedText>
+            </ThemedView>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {saveError ? (
+        <ThemedView type="backgroundElement" style={styles.stateCard}>
+          <ThemedText themeColor="textSecondary">{saveError}</ThemedText>
+        </ThemedView>
       ) : null}
 
       {!isLoading &&
@@ -113,6 +185,17 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   startButton: {
+    borderRadius: 999,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.three,
+    alignSelf: 'flex-start',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.three,
+  },
+  saveButton: {
     borderRadius: 999,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.three,

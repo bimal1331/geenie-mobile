@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useAuthStore } from '@/features/auth/store/auth-store';
 import { getBundleDetail } from '@/features/bundles/services/bundle-service';
 import { BundleDetail } from '@/features/bundles/types';
 import { usePlaybackSettings } from '@/features/settings/hooks/use-playback-settings';
@@ -12,6 +13,8 @@ type UseBundleDetailState = {
 
 export function useBundleDetail(slug: string | null) {
   const { selectedVoice } = usePlaybackSettings();
+  const authStatus = useAuthStore((state) => state.status);
+  const session = useAuthStore((state) => state.session);
   const [state, setState] = useState<UseBundleDetailState>({
     bundle: null,
     isLoading: true,
@@ -72,7 +75,14 @@ export function useBundleDetail(slug: string | null) {
     return () => {
       isMounted = false;
     };
-  }, [selectedVoice.languageCode, selectedVoice.providerVoiceId, selectedVoice.variantKey, slug]);
+  }, [
+    authStatus,
+    selectedVoice.languageCode,
+    selectedVoice.providerVoiceId,
+    selectedVoice.variantKey,
+    session?.userId,
+    slug,
+  ]);
 
   return state;
 }

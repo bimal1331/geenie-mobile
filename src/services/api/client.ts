@@ -1,6 +1,31 @@
 import { getApiBaseUrl } from '@/services/api/config';
+import { getSupabaseClient } from '@/services/supabase/client';
 
-export async function apiGet<TResponse>(path: string): Promise<TResponse> {
+type ApiRequestOptions = {
+  method?: 'GET' | 'POST' | 'DELETE';
+  body?: BodyInit | null;
+  auth?: 'none' | 'optional' | 'required';
+};
+
+async function getAccessTokenIfNeeded(mode: ApiRequestOptions['auth']) {
+  if (mode === 'none') {
+    return null;
+  }
+
+  const supabase = getSupabaseClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const token = session?.access_token ?? null;
+
+  if (mode === 'required' && !token) {
+    throw new Error('You must sign in before using this feature.');
+  }
+
+  return token;
+}
+
+async function apiRequest<TResponse>(path: string, options: ApiRequestOptions = {}): Promise<TResponse> {
   const baseUrl = getApiBaseUrl();
 
   if (!baseUrl) {
@@ -16,10 +41,25 @@ export async function apiGet<TResponse>(path: string): Promise<TResponse> {
   let response: Response;
 
   try {
-    response = await fetch(`${baseUrl}${path}`, {
+    const accessToken = await getAccessTokenIfNeeded(options.auth ?? 'none');
+    const requestInit: RequestInit = {
+      method: options.method ?? 'GET',
       headers: {
         Accept: 'application/json',
+        ...(accessToken
+          ? {
+              Authorization: `Bearer ${accessToken}`,
+            }
+          : {}),
       },
+    };
+
+    if (typeof options.body !== 'undefined' && options.body !== null) {
+      requestInit.body = options.body;
+    }
+
+    response = await fetch(`${baseUrl}${path}`, {
+      ...requestInit,
     });
   } catch (error) {
     if (__DEV__) {
@@ -74,4 +114,35 @@ export async function apiGet<TResponse>(path: string): Promise<TResponse> {
   }
 
   return payload;
+}
+
+export async function apiGet<TResponse>(
+  path: string,
+  options: Pick<ApiRequestOptions, 'auth'> = {},
+): Promise<TResponse> {
+  return apiRequest<TResponse>(path, {
+    method: 'GET',
+    auth: options.auth ?? 'none',
+  });
+}
+
+export async function apiPost<TResponse>(
+  path: string,
+  options: Pick<ApiRequestOptions, 'auth' | 'body'> = {},
+): Promise<TResponse> {
+  return apiRequest<TResponse>(path, {
+    method: 'POST',
+    auth: options.auth ?? 'none',
+    body: options.body ?? null,
+  });
+}
+
+export async function apiDelete<TResponse>(
+  path: string,
+  options: Pick<ApiRequestOptions, 'auth'> = {},
+): Promise<TResponse> {
+  return apiRequest<TResponse>(path, {
+    method: 'DELETE',
+    auth: options.auth ?? 'none',
+  });
 }
