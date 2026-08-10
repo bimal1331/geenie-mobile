@@ -24,7 +24,6 @@ type BundlePlayerScreenProps = {
 };
 
 const playerBackgroundImage = require('../../../../assets/images/player/background-abstract-mist.png');
-const Accent = '#bf6c32';
 
 export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
   const router = useRouter();
@@ -74,9 +73,9 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
   }
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: theme.background }]}>
       <Image contentFit="cover" source={playerBackgroundImage} style={StyleSheet.absoluteFill} />
-      <View style={styles.backgroundOverlay} />
+      <View style={[styles.backgroundOverlay, { backgroundColor: theme.playerOverlay }]} />
 
       <ScrollView
         style={styles.scrollView}
@@ -95,8 +94,17 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
           ]}>
           <View style={styles.headerRow}>
             <Pressable onPress={handleBack} style={({ pressed }) => pressed && styles.pressed}>
-              <View style={[styles.headerButton, { width: headerButtonSize, height: headerButtonSize }]}>
-                <SymbolView name="chevron.left" tintColor={Accent} size={22} />
+              <View
+                style={[
+                  styles.headerButton,
+                  {
+                    width: headerButtonSize,
+                    height: headerButtonSize,
+                    backgroundColor: theme.surfaceFloating,
+                    shadowColor: theme.shadowWarm,
+                  },
+                ]}>
+                <SymbolView name="chevron.left" tintColor={theme.accentPrimary} size={22} />
               </View>
             </Pressable>
 
@@ -104,10 +112,19 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
               <Pressable
                 onPress={() => setIsMusicPickerOpen(true)}
                 style={({ pressed }) => pressed && styles.pressed}>
-                <View style={[styles.headerButton, { width: headerButtonSize, height: headerButtonSize }]}>
+                <View
+                  style={[
+                    styles.headerButton,
+                    {
+                      width: headerButtonSize,
+                      height: headerButtonSize,
+                      backgroundColor: theme.surfaceFloating,
+                      shadowColor: theme.shadowWarm,
+                    },
+                  ]}>
                   <SymbolView
                     name="music.note"
-                    tintColor={selectedMusicTrack ? Accent : theme.text}
+                    tintColor={selectedMusicTrack ? theme.accentPrimary : theme.text}
                     size={20}
                   />
                 </View>
@@ -116,7 +133,16 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
               <Pressable
                 onPress={() => setIsSettingsOpen(true)}
                 style={({ pressed }) => pressed && styles.pressed}>
-                <View style={[styles.headerButton, { width: headerButtonSize, height: headerButtonSize }]}>
+                <View
+                  style={[
+                    styles.headerButton,
+                    {
+                      width: headerButtonSize,
+                      height: headerButtonSize,
+                      backgroundColor: theme.surfaceFloating,
+                      shadowColor: theme.shadowWarm,
+                    },
+                  ]}>
                   <SymbolView name="slider.horizontal.3" tintColor={theme.text} size={20} />
                 </View>
               </Pressable>
@@ -155,13 +181,27 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
           </View>
 
           {isLoading ? (
-            <View style={styles.stateCard}>
+            <View
+              style={[
+                styles.stateCard,
+                {
+                  backgroundColor: theme.surfaceElevatedStrong,
+                  shadowColor: theme.shadowWarm,
+                },
+              ]}>
               <ThemedText themeColor="textSecondary">Preparing session...</ThemedText>
             </View>
           ) : null}
 
           {!isLoading && error ? (
-            <View style={styles.stateCard}>
+            <View
+              style={[
+                styles.stateCard,
+                {
+                  backgroundColor: theme.surfaceElevatedStrong,
+                  shadowColor: theme.shadowWarm,
+                },
+              ]}>
               <ThemedText themeColor="textSecondary">{error}</ThemedText>
             </View>
           ) : null}
@@ -178,25 +218,35 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
                   paddingTop: panelPaddingTop,
                   paddingBottom: panelPaddingBottom,
                   gap: panelGap,
+                  backgroundColor: theme.surfacePanel,
+                  borderColor: theme.borderSoft,
+                  shadowColor: theme.shadowWarm,
                 },
               ]}>
               <View style={styles.progressHeader}>
-                <ThemedText style={styles.progressCount}>{session.progressLabel}</ThemedText>
-                <ThemedText themeColor="textSecondary" style={styles.progressMeta}>
+                <ThemedText style={[styles.progressCount, { color: theme.accentPrimary }]}>
+                  {session.progressLabel}
+                </ThemedText>
+                <ThemedText
+                  themeColor="textSecondary"
+                  style={[styles.progressMeta, { color: theme.textMutedWarm }]}>
                   Bundle session
                 </ThemedText>
               </View>
 
-              <View style={styles.progressTrack}>
+              <View style={[styles.progressTrack, { backgroundColor: theme.progressTrack }]}>
                 <View
                   style={[
                     styles.progressFill,
-                    { width: `${Math.max(session.progressRatio * 100, 6)}%` },
+                    {
+                      width: `${Math.max(session.progressRatio * 100, 6)}%`,
+                      backgroundColor: theme.accentPrimary,
+                    },
                   ]}
                 />
               </View>
 
-              <View style={styles.panelDivider} />
+              <View style={[styles.panelDivider, { backgroundColor: theme.dividerSoft }]} />
 
               <View style={[styles.affirmationCopyWrap, { minHeight: affirmationMinHeight }]}>
                 <ThemedText
@@ -205,6 +255,7 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
                     {
                       fontSize: affirmationFontSize,
                       lineHeight: affirmationLineHeight,
+                      color: theme.textHero,
                     },
                   ]}>
                   {session.currentText ?? 'No affirmation is available in this bundle yet.'}
@@ -225,6 +276,8 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
                       {
                         width: sideControlButtonSize,
                         height: sideControlButtonSize,
+                        backgroundColor: theme.surfaceButton,
+                        shadowColor: theme.shadowWarm,
                       },
                     ]}>
                     <SymbolView name="backward.fill" tintColor={theme.text} size={18} />
@@ -244,11 +297,13 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
                       {
                         width: playButtonSize,
                         height: playButtonSize,
+                        backgroundColor: theme.accentPrimary,
+                        shadowColor: theme.shadowWarm,
                       },
                     ]}>
                     <SymbolView
                       name={session.isPlaying ? 'pause.fill' : 'play.fill'}
-                      tintColor="#fffaf3"
+                      tintColor={theme.onAccentText}
                       size={compactLayout ? 22 : 24}
                     />
                   </View>
@@ -267,6 +322,8 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
                       {
                         width: sideControlButtonSize,
                         height: sideControlButtonSize,
+                        backgroundColor: theme.surfaceButton,
+                        shadowColor: theme.shadowWarm,
                       },
                     ]}>
                     <SymbolView name="forward.fill" tintColor={theme.text} size={18} />
@@ -274,13 +331,19 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
                 </Pressable>
               </View>
 
-              <View style={styles.panelDivider} />
+              <View style={[styles.panelDivider, { backgroundColor: theme.dividerSoft }]} />
 
               <View style={styles.restartRow}>
                 <Pressable onPress={restartBundle} style={({ pressed }) => pressed && styles.pressed}>
                   <View style={styles.restartAction}>
-                    <SymbolView name="arrow.counterclockwise" tintColor={Accent} size={22} />
-                    <ThemedText style={styles.restartLabel}>Restart bundle</ThemedText>
+                    <SymbolView
+                      name="arrow.counterclockwise"
+                      tintColor={theme.accentPrimary}
+                      size={22}
+                    />
+                    <ThemedText style={[styles.restartLabel, { color: theme.accentPrimary }]}>
+                      Restart bundle
+                    </ThemedText>
                   </View>
                 </Pressable>
               </View>
@@ -302,7 +365,6 @@ const styles = StyleSheet.create({
   },
   backgroundOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255, 250, 242, 0.58)',
   },
   scrollView: {
     flex: 1,
@@ -327,10 +389,8 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 250, 244, 0.86)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#8d5d32',
     shadowOpacity: 0.08,
     shadowRadius: 16,
     shadowOffset: {
@@ -350,14 +410,11 @@ const styles = StyleSheet.create({
   },
   bundleDescription: {
     fontFamily: Fonts.serif,
-    color: '#6d6a66',
   },
   stateCard: {
     borderRadius: 36,
-    backgroundColor: 'rgba(255, 250, 244, 0.88)',
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
-    shadowColor: '#8d5d32',
     shadowOpacity: 0.08,
     shadowRadius: 18,
     shadowOffset: {
@@ -367,10 +424,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   playerPanel: {
-    backgroundColor: 'rgba(255, 251, 246, 0.9)',
     justifyContent: 'space-between',
     minHeight: 0,
-    shadowColor: '#8d5d32',
     shadowOpacity: 0.1,
     shadowRadius: 28,
     shadowOffset: {
@@ -379,7 +434,6 @@ const styles = StyleSheet.create({
     },
     elevation: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.58)',
   },
   progressHeader: {
     flexDirection: 'row',
@@ -388,7 +442,6 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
   },
   progressCount: {
-    color: Accent,
     fontSize: 16,
     lineHeight: 20,
     fontWeight: '600',
@@ -396,22 +449,18 @@ const styles = StyleSheet.create({
   progressMeta: {
     fontSize: 15,
     lineHeight: 20,
-    color: '#6d6a66',
   },
   progressTrack: {
     height: 8,
     borderRadius: 999,
-    backgroundColor: 'rgba(216, 200, 182, 0.42)',
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
     borderRadius: 999,
-    backgroundColor: Accent,
   },
   panelDivider: {
     height: 1,
-    backgroundColor: 'rgba(191, 108, 50, 0.12)',
   },
   affirmationCopyWrap: {
     flex: 1,
@@ -421,7 +470,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.serif,
     letterSpacing: -0.6,
     fontWeight: '500',
-    color: '#1a1613',
   },
   controlRow: {
     flexDirection: 'row',
@@ -430,10 +478,8 @@ const styles = StyleSheet.create({
   },
   secondaryControlButton: {
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 250, 244, 0.92)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#8d5d32',
     shadowOpacity: 0.07,
     shadowRadius: 16,
     shadowOffset: {
@@ -444,10 +490,8 @@ const styles = StyleSheet.create({
   },
   playButton: {
     borderRadius: 999,
-    backgroundColor: Accent,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#8d5d32',
     shadowOpacity: 0.26,
     shadowRadius: 24,
     shadowOffset: {
@@ -466,7 +510,6 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   restartLabel: {
-    color: Accent,
     fontSize: 18,
     lineHeight: 24,
     fontWeight: '600',

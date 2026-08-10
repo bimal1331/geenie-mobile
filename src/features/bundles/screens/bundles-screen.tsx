@@ -6,10 +6,12 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { BundleListCard } from '@/features/bundles/components/bundle-list-card';
 import { useBundles } from '@/features/bundles/hooks/use-bundles';
+import { useTheme } from '@/hooks/use-theme';
 import { StyleSheet } from 'react-native';
 
 export function BundlesScreen() {
   const router = useRouter();
+  const theme = useTheme();
   const { bundles, isLoading, error } = useBundles();
 
   return (
@@ -18,19 +20,34 @@ export function BundlesScreen() {
       title="Explore"
       description="Discover curated affirmation bundles with a clean path into detail, playback, and a more personal listening rhythm.">
       {isLoading ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">Loading collections...</ThemedText>
         </ThemedView>
       ) : null}
 
       {!isLoading && error ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">{error}</ThemedText>
         </ThemedView>
       ) : null}
 
       {!isLoading && !error && bundles.length === 0 ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">
             Nothing is available to explore right now.
           </ThemedText>
@@ -55,5 +72,6 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.four,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
+    borderWidth: 1,
   },
 });

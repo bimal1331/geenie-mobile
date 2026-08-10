@@ -36,7 +36,10 @@ export function BottomSheetModal({
   return (
     <Modal animationType="slide" onRequestClose={onClose} transparent visible={isOpen}>
       <View style={styles.overlay}>
-        <Pressable onPress={onClose} style={styles.backdrop} />
+        <Pressable
+          onPress={onClose}
+          style={[styles.backdrop, { backgroundColor: theme.modalScrim }]}
+        />
         <ThemedView type="backgroundElement" style={[styles.sheet, sheetStyle]}>
           <View style={styles.sheetHeader}>
             <View style={styles.titleColumn}>
@@ -68,7 +71,6 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.34)',
   },
   sheet: {
     borderTopLeftRadius: 28,

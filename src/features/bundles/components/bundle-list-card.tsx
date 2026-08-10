@@ -3,8 +3,9 @@ import { Image } from 'expo-image';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Fonts, Spacing } from '@/constants/theme';
 import { BundleSummary } from '@/features/bundles/types';
+import { useTheme } from '@/hooks/use-theme';
 
 type BundleListCardProps = {
   bundle: BundleSummary;
@@ -12,9 +13,20 @@ type BundleListCardProps = {
 };
 
 export function BundleListCard({ bundle, onPress }: BundleListCardProps) {
+  const theme = useTheme();
+
   return (
     <Pressable onPress={onPress} style={({ pressed }) => pressed && styles.pressed}>
-      <ThemedView type="backgroundElement" style={styles.card}>
+      <ThemedView
+        type="backgroundElement"
+        style={[
+          styles.card,
+          {
+            backgroundColor: theme.surfaceElevated,
+            borderColor: theme.borderSoft,
+            shadowColor: theme.shadowWarm,
+          },
+        ]}>
         {bundle.coverImageUrl ? (
           <Image
             contentFit="cover"
@@ -62,6 +74,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.four,
     gap: Spacing.two,
+    borderWidth: 1,
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    elevation: 3,
   },
   coverImage: {
     width: '100%',
@@ -89,6 +109,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.one,
   },
   title: {
+    fontFamily: Fonts.serif,
     fontSize: 24,
     lineHeight: 30,
   },

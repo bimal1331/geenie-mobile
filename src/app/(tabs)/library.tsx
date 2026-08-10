@@ -7,10 +7,12 @@ import { Spacing } from '@/constants/theme';
 import { useAuthStore } from '@/features/auth/store/auth-store';
 import { BundleListCard } from '@/features/bundles/components/bundle-list-card';
 import { useSavedBundles } from '@/features/bundles/hooks/use-saved-bundles';
+import { useTheme } from '@/hooks/use-theme';
 import { Pressable, StyleSheet } from 'react-native';
 
 export default function LibraryScreen() {
   const router = useRouter();
+  const theme = useTheme();
   const session = useAuthStore((state) => state.session);
   const authStatus = useAuthStore((state) => state.status);
   const { bundles, isLoading, error } = useSavedBundles();
@@ -21,7 +23,12 @@ export default function LibraryScreen() {
       title="Library"
       description="Your saved bundles live here so you can come back to them without searching again.">
       {authStatus === 'ready' && !session ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText type="subtitle" style={styles.stateTitle}>
             Sign in to build your library
           </ThemedText>
@@ -37,19 +44,34 @@ export default function LibraryScreen() {
       ) : null}
 
       {session && isLoading ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">Loading your saved bundles...</ThemedText>
         </ThemedView>
       ) : null}
 
       {session && !isLoading && error ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">{error}</ThemedText>
         </ThemedView>
       ) : null}
 
       {session && !isLoading && !error && bundles.length === 0 ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">
             You have not saved any bundles yet.
           </ThemedText>
@@ -76,6 +98,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
     gap: Spacing.three,
+    borderWidth: 1,
   },
   stateTitle: {
     fontSize: 24,

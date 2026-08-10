@@ -90,19 +90,34 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
         'Affirmations in this bundle are arranged as a guided listening sequence.'
       }>
       {isLoading ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">Loading bundle...</ThemedText>
         </ThemedView>
       ) : null}
 
       {!isLoading && error ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">{error}</ThemedText>
         </ThemedView>
       ) : null}
 
       {!isLoading && !error && bundle?.items.length === 0 ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">
             This bundle does not have any affirmations yet.
           </ThemedText>
@@ -116,7 +131,7 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
               playBundle(bundle);
               router.push(`/player/${bundle.slug}`);
             }}
-            style={({ pressed }) => pressed && styles.pressed}>
+            style={({ pressed }) => [styles.actionButtonPressable, pressed && styles.pressed]}>
             <ThemedView type="backgroundSelected" style={styles.startButton}>
               <ThemedText type="smallBold">Play</ThemedText>
             </ThemedView>
@@ -125,11 +140,24 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
           <Pressable
             disabled={authStatus === 'loading' || isSaving}
             onPress={handleToggleSaved}
-            style={({ pressed }) => pressed && styles.pressed}>
+            style={({ pressed }) => [styles.actionButtonPressable, pressed && styles.pressed]}>
             <ThemedView
               type={isSaved ? 'backgroundSelected' : 'backgroundElement'}
-              style={styles.saveButton}>
-              <ThemedText type="smallBold">
+              style={[
+                styles.saveButton,
+                isSaved
+                  ? { backgroundColor: theme.backgroundSelected }
+                  : {
+                      backgroundColor: theme.surfaceElevatedStrong,
+                      borderColor: theme.borderStrong,
+                    },
+              ]}>
+              <ThemedText
+                type="smallBold"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.72}
+                style={styles.actionButtonLabel}>
                 {!session
                   ? 'Sign in to save'
                   : isSaving
@@ -144,7 +172,12 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
       ) : null}
 
       {saveError ? (
-        <ThemedView type="backgroundElement" style={styles.stateCard}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.stateCard,
+            { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          ]}>
           <ThemedText themeColor="textSecondary">{saveError}</ThemedText>
         </ThemedView>
       ) : null}
@@ -155,12 +188,12 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
           <ThemedView
             key={`${item.affirmationId}-${item.orderIndex}`}
             style={[
-              styles.itemRow,
-              {
-                borderBottomColor: theme.backgroundSelected,
-              },
+              styles.itemCard,
+              { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
             ]}>
-            <ThemedText style={styles.itemText}>{item.text}</ThemedText>
+            <ThemedText style={[styles.itemText, { color: theme.textDisplay }]}>
+              {item.text}
+            </ThemedText>
           </ThemedView>
         ))}
     </AppScreen>
@@ -172,6 +205,7 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.four,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
+    borderWidth: 1,
   },
   backButton: {
     alignSelf: 'flex-start',
@@ -186,27 +220,39 @@ const styles = StyleSheet.create({
   },
   startButton: {
     borderRadius: 999,
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Spacing.five,
     paddingVertical: Spacing.three,
-    alignSelf: 'flex-start',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: Spacing.three,
+  },
+  actionButtonPressable: {
+    flex: 1,
   },
   saveButton: {
     borderRadius: 999,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.three,
-    alignSelf: 'flex-start',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
-  itemRow: {
+  itemCard: {
+    borderRadius: Spacing.four,
+    paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
-    borderBottomWidth: 1,
+    borderWidth: 1,
   },
   itemText: {
     fontSize: 18,
     lineHeight: 28,
+  },
+  actionButtonLabel: {
+    textAlign: 'center',
   },
 });
