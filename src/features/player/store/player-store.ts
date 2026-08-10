@@ -16,6 +16,7 @@ type PlayerStoreState = {
   activeBundleSlug: string | null;
   bundleTitle: string | null;
   bundleDescription: string | null;
+  bundleCoverImageUrl: string | null;
   queue: PlayerQueueItem[];
   currentIndex: number;
   isPlaying: boolean;
@@ -29,7 +30,11 @@ type PlayerStoreActions = {
   playBundle: (bundle: BundleDetail, startIndex?: number) => void;
   playSingleAffirmation: (
     item: BundleDetailItem,
-    options?: { bundleTitle?: string | null; bundleDescription?: string | null },
+    options?: {
+      bundleTitle?: string | null;
+      bundleDescription?: string | null;
+      bundleCoverImageUrl?: string | null;
+    },
   ) => void;
   pausePlayback: () => void;
   resumePlayback: () => void;
@@ -62,6 +67,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   activeBundleSlug: null,
   bundleTitle: null,
   bundleDescription: null,
+  bundleCoverImageUrl: null,
   queue: [],
   currentIndex: 0,
   isPlaying: false,
@@ -78,6 +84,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       activeBundleSlug: bundle.slug,
       bundleTitle: bundle.title,
       bundleDescription: bundle.description,
+      bundleCoverImageUrl: bundle.coverImageUrl,
       queue,
       currentIndex: safeIndex,
       isPlaying: queue.length > 0,
@@ -92,6 +99,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       activeBundleSlug: null,
       bundleTitle: options?.bundleTitle ?? 'Affirmation',
       bundleDescription: options?.bundleDescription ?? null,
+      bundleCoverImageUrl: options?.bundleCoverImageUrl ?? null,
       queue: [toQueueItem(item)],
       currentIndex: 0,
       isPlaying: true,
@@ -178,6 +186,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       activeBundleSlug: null,
       bundleTitle: null,
       bundleDescription: null,
+      bundleCoverImageUrl: null,
       queue: [],
       currentIndex: 0,
       isPlaying: false,

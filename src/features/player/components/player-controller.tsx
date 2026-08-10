@@ -13,6 +13,8 @@ import { useSettingsStore } from '@/features/settings/store/settings-store';
 
 export function PlayerController() {
   const activeBundleSlug = usePlayerStore((state) => state.activeBundleSlug);
+  const bundleTitle = usePlayerStore((state) => state.bundleTitle);
+  const bundleCoverImageUrl = usePlayerStore((state) => state.bundleCoverImageUrl);
   const queue = usePlayerStore((state) => state.queue);
   const currentIndex = usePlayerStore((state) => state.currentIndex);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
@@ -59,6 +61,7 @@ export function PlayerController() {
     void setAudioModeAsync({
       playsInSilentMode: true,
       shouldPlayInBackground: true,
+      interruptionMode: 'doNotMix',
     });
 
     return () => {
@@ -73,6 +76,31 @@ export function PlayerController() {
       musicPlayerRef.current = null;
     };
   }, [musicPlayer, player]);
+
+  useEffect(() => {
+    const audioUrl = currentItem?.audioUrl ?? null;
+
+    if (!audioUrl || !currentItem) {
+      player.clearLockScreenControls();
+      return;
+    }
+
+    // The spoken-affirmation player owns lock screen metadata and transport controls.
+    player.setActiveForLockScreen(
+      true,
+      {
+        title: currentItem.text,
+        artist: currentItem.voiceName ?? 'Geenie',
+        albumTitle: bundleTitle ?? 'Geenie',
+        artworkUrl: bundleCoverImageUrl ?? undefined,
+      },
+    );
+  }, [
+    bundleCoverImageUrl,
+    bundleTitle,
+    currentItem,
+    player,
+  ]);
 
   useEffect(() => {
     player.volume = voiceVolume;
