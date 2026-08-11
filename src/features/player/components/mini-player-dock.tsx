@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { togglePlayerPlayback } from '@/features/player/audio/player-transport';
 import { usePlayerStore } from '@/features/player/store/player-store';
 
 export function MiniPlayerDock() {
@@ -19,7 +20,6 @@ export function MiniPlayerDock() {
   const queue = usePlayerStore((state) => state.queue);
   const currentIndex = usePlayerStore((state) => state.currentIndex);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
-  const togglePlayback = usePlayerStore((state) => state.togglePlayback);
 
   const currentItem = queue[currentIndex] ?? null;
   const isOnPlayerScreen = pathname.startsWith('/player/');
@@ -61,7 +61,7 @@ export function MiniPlayerDock() {
 
         <Pressable
           hitSlop={10}
-          onPress={togglePlayback}
+          onPress={togglePlayerPlayback}
           style={({ pressed }) => [
             styles.playButtonPressable,
             pressed && styles.pressed,

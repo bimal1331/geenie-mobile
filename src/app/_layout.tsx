@@ -3,7 +3,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StyleSheet, View, useColorScheme } from 'react-native';
 
 import { AuthProvider } from '@/features/auth/components/auth-provider';
-import { PlayerController } from '@/features/player/components/player-controller';
+import { PlayerAudioProvider } from '@/features/player/audio/player-audio-provider';
 import { SettingsSyncProvider } from '@/features/settings/components/settings-sync-provider';
 
 SplashScreen.preventAutoHideAsync();
@@ -16,7 +16,7 @@ export default function TabLayout() {
       <View style={styles.root}>
         <AuthProvider />
         <SettingsSyncProvider />
-        <PlayerController />
+        <PlayerAudioProvider />
         <Stack screenOptions={{ headerShown: false }} />
       </View>
     </ThemeProvider>

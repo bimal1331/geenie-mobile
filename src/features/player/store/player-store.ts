@@ -18,11 +18,11 @@ type PlayerStoreState = {
   bundleDescription: string | null;
   bundleCoverImageUrl: string | null;
   queue: PlayerQueueItem[];
+  sessionRevision: number;
   currentIndex: number;
   isPlaying: boolean;
   isInAffirmationGap: boolean;
   playbackError: string | null;
-  playbackRevision: number;
   selectedMusicTrack: MusicTrack | null;
 };
 
@@ -36,16 +36,14 @@ type PlayerStoreActions = {
       bundleCoverImageUrl?: string | null;
     },
   ) => void;
-  pausePlayback: () => void;
-  resumePlayback: () => void;
-  togglePlayback: () => void;
-  goToNext: () => void;
-  goToPrevious: () => void;
-  restartQueue: () => void;
   clearPlayer: () => void;
   setPlaybackError: (message: string | null) => void;
-  setTrackEnded: () => void;
   setGapActive: (value: boolean) => void;
+  syncPlaybackSnapshot: (snapshot: {
+    currentIndex?: number;
+    isPlaying?: boolean;
+    playbackError?: string | null;
+  }) => void;
   selectMusicTrack: (track: MusicTrack) => void;
   clearMusicTrack: () => void;
 };
@@ -63,122 +61,58 @@ function toQueueItem(item: BundleDetailItem): PlayerQueueItem {
   };
 }
 
-export const usePlayerStore = create<PlayerStore>((set, get) => ({
+function toPlayableQueue(items: BundleDetailItem[]) {
+  return items
+    .filter((item) => Boolean(item.audioUrl))
+    .map(toQueueItem);
+}
+
+export const usePlayerStore = create<PlayerStore>((set) => ({
   activeBundleSlug: null,
   bundleTitle: null,
   bundleDescription: null,
   bundleCoverImageUrl: null,
   queue: [],
+  sessionRevision: 0,
   currentIndex: 0,
   isPlaying: false,
   isInAffirmationGap: false,
   playbackError: null,
-  playbackRevision: 0,
   selectedMusicTrack: null,
 
   playBundle: (bundle, startIndex = 0) => {
-    const queue = bundle.items.map(toQueueItem);
+    const queue = toPlayableQueue(bundle.items);
     const safeIndex = queue.length > 0 ? Math.max(0, Math.min(startIndex, queue.length - 1)) : 0;
 
-    set({
+    set((state) => ({
       activeBundleSlug: bundle.slug,
       bundleTitle: bundle.title,
       bundleDescription: bundle.description,
       bundleCoverImageUrl: bundle.coverImageUrl,
       queue,
+      sessionRevision: state.sessionRevision + 1,
       currentIndex: safeIndex,
       isPlaying: queue.length > 0,
       isInAffirmationGap: false,
       playbackError: null,
-      playbackRevision: 0,
-    });
+    }));
   },
 
   playSingleAffirmation: (item, options) => {
-    set({
+    const queue = item.audioUrl ? [toQueueItem(item)] : [];
+
+    set((state) => ({
       activeBundleSlug: null,
       bundleTitle: options?.bundleTitle ?? 'Affirmation',
       bundleDescription: options?.bundleDescription ?? null,
       bundleCoverImageUrl: options?.bundleCoverImageUrl ?? null,
-      queue: [toQueueItem(item)],
-      currentIndex: 0,
-      isPlaying: true,
-      isInAffirmationGap: false,
-      playbackError: null,
-      playbackRevision: 0,
-    });
-  },
-
-  pausePlayback: () => {
-    set({ isPlaying: false, isInAffirmationGap: false });
-  },
-
-  resumePlayback: () => {
-    const { queue, currentIndex } = get();
-
-    if (queue.length === 0) {
-      return;
-    }
-
-    set({
-      currentIndex: currentIndex >= queue.length - 1 ? 0 : currentIndex,
-      isPlaying: true,
-      isInAffirmationGap: false,
-      playbackError: null,
-      playbackRevision:
-        currentIndex >= queue.length - 1 ? get().playbackRevision + 1 : get().playbackRevision,
-    });
-  },
-
-  togglePlayback: () => {
-    if (get().isPlaying) {
-      get().pausePlayback();
-      return;
-    }
-
-    get().resumePlayback();
-  },
-
-  goToNext: () => {
-    const { queue, currentIndex } = get();
-
-    if (queue.length === 0) {
-      return;
-    }
-
-    set({
-      currentIndex: Math.min(currentIndex + 1, queue.length - 1),
-      isPlaying: true,
-      isInAffirmationGap: false,
-      playbackError: null,
-    });
-  },
-
-  goToPrevious: () => {
-    const { queue, currentIndex, isPlaying } = get();
-
-    if (queue.length === 0) {
-      return;
-    }
-
-    set({
-      currentIndex: Math.max(currentIndex - 1, 0),
-      isPlaying,
-      isInAffirmationGap: false,
-      playbackError: null,
-    });
-  },
-
-  restartQueue: () => {
-    const { queue } = get();
-
-    set({
+      queue,
+      sessionRevision: state.sessionRevision + 1,
       currentIndex: 0,
       isPlaying: queue.length > 0,
       isInAffirmationGap: false,
-      playbackError: null,
-      playbackRevision: get().playbackRevision + 1,
-    });
+      playbackError: queue.length > 0 ? null : 'Audio is not available for this affirmation.',
+    }));
   },
 
   clearPlayer: () => {
@@ -188,11 +122,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       bundleDescription: null,
       bundleCoverImageUrl: null,
       queue: [],
+      sessionRevision: 0,
       currentIndex: 0,
       isPlaying: false,
       isInAffirmationGap: false,
       playbackError: null,
-      playbackRevision: 0,
     });
   },
 
@@ -200,31 +134,21 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({ playbackError: message });
   },
 
-  setTrackEnded: () => {
-    const { queue, currentIndex } = get();
-
-    if (queue.length === 0) {
-      set({ isPlaying: false, isInAffirmationGap: false });
-      return;
-    }
-
-    if (currentIndex >= queue.length - 1) {
-      set({ isPlaying: false, isInAffirmationGap: false });
-      return;
-    }
-
-    set({
-      currentIndex: currentIndex + 1,
-      isPlaying: true,
-      isInAffirmationGap: false,
-      playbackError: null,
-    });
-  },
-
   setGapActive: (value) => {
     set({
       isInAffirmationGap: value,
     });
+  },
+
+  syncPlaybackSnapshot: (snapshot) => {
+    set((state) => ({
+      currentIndex: snapshot.currentIndex ?? state.currentIndex,
+      isPlaying: snapshot.isPlaying ?? state.isPlaying,
+      playbackError:
+        typeof snapshot.playbackError === 'undefined'
+          ? state.playbackError
+          : snapshot.playbackError,
+    }));
   },
 
   selectMusicTrack: (track) => {

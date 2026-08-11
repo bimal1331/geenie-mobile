@@ -1,6 +1,12 @@
 import { useEffect, useMemo } from 'react';
 
 import { useBundleDetail } from '@/features/bundles/hooks/use-bundle-detail';
+import {
+  playNextAffirmation,
+  playPreviousAffirmation,
+  restartPlayerBundle,
+  togglePlayerPlayback,
+} from '@/features/player/audio/player-transport';
 import { usePlayerStore } from '@/features/player/store/player-store';
 import { BundlePlayerSession } from '@/features/player/types';
 
@@ -14,21 +20,19 @@ export function useBundlePlayer(slug: string | null) {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playbackError = usePlayerStore((state) => state.playbackError);
   const playBundle = usePlayerStore((state) => state.playBundle);
-  const togglePlayback = usePlayerStore((state) => state.togglePlayback);
-  const goToNext = usePlayerStore((state) => state.goToNext);
-  const goToPrevious = usePlayerStore((state) => state.goToPrevious);
-  const restartQueue = usePlayerStore((state) => state.restartQueue);
 
   useEffect(() => {
     if (!bundle) {
       return;
     }
 
+    const playableItems = bundle.items.filter((item) => Boolean(item.audioUrl));
+
     const hasMatchingQueue =
       activeBundleSlug === bundle.slug &&
-      queue.length === bundle.items.length &&
+      queue.length === playableItems.length &&
       queue.every((item, index) => {
-        const bundleItem = bundle.items[index];
+        const bundleItem = playableItems[index];
 
         return (
           item.affirmationId === bundleItem?.affirmationId &&
@@ -69,9 +73,9 @@ export function useBundlePlayer(slug: string | null) {
     session,
     canGoPrevious: session.currentIndex > 0,
     canGoNext: session.currentIndex < Math.max(session.totalAffirmations - 1, 0),
-    togglePlayback,
-    goToNext,
-    goToPrevious,
-    restartBundle: restartQueue,
+    togglePlayback: togglePlayerPlayback,
+    goToNext: playNextAffirmation,
+    goToPrevious: playPreviousAffirmation,
+    restartBundle: restartPlayerBundle,
   };
 }
