@@ -40,7 +40,7 @@ export class VoiceTrackEngine {
 
   async loadTrack(
     item: PlayerQueueItem,
-    context: VoiceTrackContext,
+    _context: VoiceTrackContext,
     options?: {
       forceReload?: boolean;
     },
@@ -57,13 +57,6 @@ export class VoiceTrackEngine {
       await this.player.replace({ uri: item.audioUrl });
       this.currentTrackKey = nextTrackKey;
     }
-
-    this.player.setActiveForLockScreen(true, {
-      title: item.text,
-      artist: item.voiceName ?? 'Geenie',
-      albumTitle: context.bundleTitle ?? 'Geenie',
-      artworkUrl: context.bundleCoverImageUrl ?? undefined,
-    });
 
     // Every freshly selected affirmation should start from the beginning.
     await this.player.seekTo(0);
@@ -84,7 +77,6 @@ export class VoiceTrackEngine {
   async clearTrack() {
     this.currentTrackKey = null;
     this.player.pause();
-    this.player.clearLockScreenControls();
   }
 
   destroy() {
