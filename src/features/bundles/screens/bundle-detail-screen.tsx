@@ -83,7 +83,6 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
           </ThemedView>
         </Pressable>
       }
-      eyebrow="Bundle"
       title={bundle?.title ?? 'Bundle'}
       description={
         bundle?.description ??
@@ -146,7 +145,10 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
               style={[
                 styles.saveButton,
                 isSaved
-                  ? { backgroundColor: theme.backgroundSelected }
+                  ? {
+                      backgroundColor: theme.backgroundSelected,
+                      borderWidth: 0,
+                    }
                   : {
                       backgroundColor: theme.surfaceElevatedStrong,
                       borderColor: theme.borderStrong,
