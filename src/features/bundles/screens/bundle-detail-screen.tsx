@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
+import { Image } from 'expo-image';
 
 import { AppScreen } from '@/components/app-screen';
 import { ThemedView } from '@/components/themed-view';
@@ -88,6 +89,19 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
         bundle?.description ??
         'Affirmations in this bundle are arranged as a guided listening sequence.'
       }>
+      {bundle?.coverImageUrl ? (
+        <ThemedView
+          type="backgroundElement"
+          style={[styles.coverFrame, { borderColor: theme.borderSoft }]}>
+          <Image
+            accessibilityLabel={`${bundle.title} cover image`}
+            contentFit="cover"
+            source={{ uri: bundle.coverImageUrl }}
+            style={styles.coverImage}
+          />
+        </ThemedView>
+      ) : null}
+
       {isLoading ? (
         <ThemedView
           type="backgroundElement"
@@ -253,6 +267,16 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 18,
     lineHeight: 28,
+  },
+  coverFrame: {
+    aspectRatio: 16 / 9,
+    borderRadius: Spacing.four,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  coverImage: {
+    width: '100%',
+    height: '100%',
   },
   actionButtonLabel: {
     textAlign: 'center',
