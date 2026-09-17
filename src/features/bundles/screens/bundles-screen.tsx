@@ -16,9 +16,8 @@ export function BundlesScreen() {
 
   return (
     <AppScreen
-      eyebrow="Curated audio"
       title="Explore"
-      description="Discover curated affirmation bundles with a clean path into detail, playback, and a more personal listening rhythm.">
+      description="Curated affirmation bundles to support every season of your life.">
       {isLoading ? (
         <ThemedView
           type="backgroundElement"
@@ -60,6 +59,7 @@ export function BundlesScreen() {
           <BundleListCard
             key={bundle.id}
             bundle={bundle}
+            variant="imageStrip"
             onPress={() => router.push(`/bundles/${bundle.slug}`)}
           />
         ))}
