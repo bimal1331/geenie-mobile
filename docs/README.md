@@ -4,6 +4,8 @@ This folder holds the project documentation for `geenie-mobile`.
 
 ## Documents
 
+- [Architecture](./ARCHITECTURE.md)
+- [Design Decisions](./DESIGN_DECISIONS.md)
 - [Auth And Access](./AUTH_AND_ACCESS.md)
 
 ## Local development
