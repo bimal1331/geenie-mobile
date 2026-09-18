@@ -27,7 +27,7 @@ export function PlayerAudioProvider() {
     affirmationGapMs,
     musicVolume,
     voiceVolume,
-    loopBundleForever,
+    bundleRepeatDurationMinutes,
     selectedMusicTrackId,
   } = usePlaybackSettings();
   const { categories: musicCategories } = useMusicLibrary();
@@ -57,11 +57,11 @@ export function PlayerAudioProvider() {
   useEffect(() => {
     coordinator.syncSettings({
       affirmationGapMs,
-      loopBundleForever,
+      bundleRepeatDurationMinutes,
       voiceVolume,
       musicVolume,
     });
-  }, [affirmationGapMs, coordinator, loopBundleForever, musicVolume, voiceVolume]);
+  }, [affirmationGapMs, bundleRepeatDurationMinutes, coordinator, musicVolume, voiceVolume]);
 
   // Background music should continue during the configured gap between affirmations.
   useEffect(() => {

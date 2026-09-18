@@ -7,11 +7,15 @@ export type PlaybackVoiceOption = {
   variantKey: BundlePlaybackVariantKey;
 };
 
+// 0 means play once. A positive value is a repeat duration in minutes.
+// Null means repeat indefinitely.
+export type BundleRepeatDurationMinutes = number | null;
+
 export type PlaybackSettings = {
   affirmationGapMs: number;
   musicVolume: number;
   voiceVolume: number;
-  loopBundleForever: boolean;
+  bundleRepeatDurationMinutes: BundleRepeatDurationMinutes;
   selectedVoice: PlaybackVoiceOption;
   selectedMusicTrackId: string | null;
 };

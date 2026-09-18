@@ -13,7 +13,7 @@ export const DEFAULT_PLAYBACK_SETTINGS: PlaybackSettings = {
   affirmationGapMs: 3000,
   musicVolume: 0.35,
   voiceVolume: 1,
-  loopBundleForever: false,
+  bundleRepeatDurationMinutes: 0,
   selectedVoice: AVAILABLE_PLAYBACK_VOICES[0],
   selectedMusicTrackId: null,
 };

@@ -7,7 +7,9 @@ export function usePlaybackSettings() {
   const affirmationGapMs = useSettingsStore((state) => state.affirmationGapMs);
   const musicVolume = useSettingsStore((state) => state.musicVolume);
   const voiceVolume = useSettingsStore((state) => state.voiceVolume);
-  const loopBundleForever = useSettingsStore((state) => state.loopBundleForever);
+  const bundleRepeatDurationMinutes = useSettingsStore(
+    (state) => state.bundleRepeatDurationMinutes,
+  );
   const selectedVoice = useSettingsStore((state) => state.selectedVoice);
   const selectedMusicTrackId = useSettingsStore((state) => state.selectedMusicTrackId);
 
@@ -17,14 +19,14 @@ export function usePlaybackSettings() {
       affirmationGapMs,
       musicVolume,
       voiceVolume,
-      loopBundleForever,
+      bundleRepeatDurationMinutes,
       selectedVoice,
       selectedMusicTrackId,
     }),
     [
       affirmationGapMs,
       hasHydrated,
-      loopBundleForever,
+      bundleRepeatDurationMinutes,
       musicVolume,
       selectedMusicTrackId,
       selectedVoice,

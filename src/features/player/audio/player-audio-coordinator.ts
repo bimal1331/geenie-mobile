@@ -29,12 +29,15 @@ export class PlayerAudioCoordinator {
   private loadedTrackKey: string | null = null;
   private settings: PlayerAudioSettingsSnapshot = {
     affirmationGapMs: 0,
-    loopBundleForever: false,
+    bundleRepeatDurationMinutes: 0,
     voiceVolume: 1,
     musicVolume: 0.5,
   };
+  private sessionRepeatDurationMinutes: number | null = 0;
+  private repeatUntil: number | null = null;
   private gapTimeout: ReturnType<typeof setTimeout> | null = null;
   private pendingAdvanceIndex: number | null = null;
+  private hasCompletedBundle = false;
   private sawDidJustFinish = false;
   private loadRequestId = 0;
 
@@ -65,7 +68,10 @@ export class PlayerAudioCoordinator {
     this.currentSessionKey = null;
     this.loadedTrackKey = null;
     this.pendingAdvanceIndex = null;
+    this.hasCompletedBundle = false;
     this.sawDidJustFinish = false;
+    this.sessionRepeatDurationMinutes = 0;
+    this.repeatUntil = null;
   }
 
   syncSession(session: PlayerSessionSnapshot) {
@@ -76,6 +82,9 @@ export class PlayerAudioCoordinator {
       this.currentSessionKey = null;
       this.loadedTrackKey = null;
       this.pendingAdvanceIndex = null;
+      this.hasCompletedBundle = false;
+      this.sessionRepeatDurationMinutes = 0;
+      this.repeatUntil = null;
       this.clearAffirmationGap();
       void this.voiceEngine.clearTrack();
       return;
@@ -87,7 +96,9 @@ export class PlayerAudioCoordinator {
       this.currentSessionKey = nextSessionKey;
       this.loadedTrackKey = null;
       this.pendingAdvanceIndex = null;
+      this.hasCompletedBundle = false;
       this.sawDidJustFinish = false;
+      this.startBundleRepeatWindow();
       this.clearAffirmationGap();
       void this.loadTrackAtIndex(session.currentIndex, {
         shouldAutoPlay: session.isPlaying,
@@ -155,6 +166,15 @@ export class PlayerAudioCoordinator {
       return;
     }
 
+    if (this.hasCompletedBundle) {
+      this.hasCompletedBundle = false;
+      this.clearAffirmationGap();
+      this.startBundleRepeatWindow();
+      void this.advanceToIndex(0, true);
+      void this.musicEngine.play();
+      return;
+    }
+
     store.syncPlaybackSnapshot({ isPlaying: true, playbackError: null });
 
     if (this.pendingAdvanceIndex !== null) {
@@ -175,6 +195,7 @@ export class PlayerAudioCoordinator {
     }
 
     this.pendingAdvanceIndex = null;
+    this.hasCompletedBundle = false;
     this.clearAffirmationGap();
     store.setGapActive(false);
     void this.advanceToIndex(nextIndex, true);
@@ -189,6 +210,7 @@ export class PlayerAudioCoordinator {
     }
 
     this.pendingAdvanceIndex = null;
+    this.hasCompletedBundle = false;
     this.clearAffirmationGap();
     store.setGapActive(false);
     void this.advanceToIndex(previousIndex, true);
@@ -202,7 +224,9 @@ export class PlayerAudioCoordinator {
     }
 
     this.pendingAdvanceIndex = null;
+    this.hasCompletedBundle = false;
     this.clearAffirmationGap();
+    this.startBundleRepeatWindow();
     store.setGapActive(false);
     void this.advanceToIndex(0, true);
   }
@@ -248,12 +272,13 @@ export class PlayerAudioCoordinator {
     const currentIndex = Math.min(store.currentIndex, queue.length - 1);
     const hasNextTrack = currentIndex < queue.length - 1;
     const shouldLoopCurrentBundle =
-      Boolean(store.activeBundleSlug) && this.settings.loopBundleForever;
+      Boolean(store.activeBundleSlug) && this.shouldRepeatCurrentBundle();
 
     if (!hasNextTrack && !shouldLoopCurrentBundle) {
       store.setGapActive(false);
       store.syncPlaybackSnapshot({ isPlaying: false });
       this.pendingAdvanceIndex = null;
+      this.hasCompletedBundle = true;
       this.musicEngine.pause();
       return;
     }
@@ -295,6 +320,7 @@ export class PlayerAudioCoordinator {
     const store = usePlayerStore.getState();
 
     this.pendingAdvanceIndex = null;
+    this.hasCompletedBundle = false;
     this.sawDidJustFinish = false;
     store.setGapActive(false);
     store.syncPlaybackSnapshot({
@@ -367,6 +393,27 @@ export class PlayerAudioCoordinator {
 
     clearTimeout(this.gapTimeout);
     this.gapTimeout = null;
+  }
+
+  private startBundleRepeatWindow() {
+    this.sessionRepeatDurationMinutes = this.settings.bundleRepeatDurationMinutes;
+    this.repeatUntil =
+      typeof this.sessionRepeatDurationMinutes === 'number' &&
+      this.sessionRepeatDurationMinutes > 0
+        ? Date.now() + this.sessionRepeatDurationMinutes * 60 * 1000
+        : null;
+  }
+
+  private shouldRepeatCurrentBundle() {
+    if (this.sessionRepeatDurationMinutes === null) {
+      return true;
+    }
+
+    if (this.sessionRepeatDurationMinutes <= 0) {
+      return false;
+    }
+
+    return this.repeatUntil !== null && Date.now() < this.repeatUntil;
   }
 }
 

@@ -10,6 +10,7 @@ import {
 } from '@/features/settings/config';
 import { usePlaybackSettings } from '@/features/settings/hooks/use-playback-settings';
 import { useSettingsStore } from '@/features/settings/store/settings-store';
+import type { BundleRepeatDurationMinutes } from '@/features/settings/types';
 import { useTheme } from '@/hooks/use-theme';
 
 type PlaybackSettingsSheetProps = {
@@ -27,6 +28,36 @@ function formatGapLabel(value: number) {
 
 function formatVolumeLabel(value: number) {
   return `${Math.round(value * 100)}%`;
+}
+
+const REPEAT_DURATION_SLIDER_VALUES: BundleRepeatDurationMinutes[] = [
+  0,
+  ...Array.from({ length: 24 }, (_, index) => (index + 1) * 5),
+  null,
+];
+
+function formatBundleRepeatLabel(value: BundleRepeatDurationMinutes) {
+  if (value === null) {
+    return '∞';
+  }
+
+  if (value === 0) {
+    return 'Once';
+  }
+
+  return `${value} min`;
+}
+
+function getRepeatSliderIndex(value: BundleRepeatDurationMinutes) {
+  if (value === null) {
+    return REPEAT_DURATION_SLIDER_VALUES.length - 1;
+  }
+
+  if (value <= 0) {
+    return 0;
+  }
+
+  return Math.max(1, Math.min(24, Math.round(value / 5)));
 }
 
 type ChoiceChipProps = {
@@ -104,6 +135,44 @@ function GapSliderRow({ value, onValueChange }: GapSliderRowProps) {
   );
 }
 
+type BundleRepeatSliderRowProps = {
+  value: BundleRepeatDurationMinutes;
+  onValueChange: (value: BundleRepeatDurationMinutes) => void;
+};
+
+function BundleRepeatSliderRow({ value, onValueChange }: BundleRepeatSliderRowProps) {
+  const theme = useTheme();
+
+  return (
+    <View style={styles.settingGroup}>
+      <View style={styles.settingHeader}>
+        <ThemedText type="smallBold">Repeat bundle</ThemedText>
+        <ThemedText themeColor="textSecondary">{formatBundleRepeatLabel(value)}</ThemedText>
+      </View>
+      <Slider
+        accessibilityLabel="Bundle repeat duration"
+        minimumTrackTintColor={theme.text}
+        maximumTrackTintColor={theme.backgroundSelected}
+        thumbTintColor={theme.text}
+        minimumValue={0}
+        maximumValue={REPEAT_DURATION_SLIDER_VALUES.length - 1}
+        step={1}
+        value={getRepeatSliderIndex(value)}
+        onValueChange={(nextIndex) => {
+          const nextValue = REPEAT_DURATION_SLIDER_VALUES[Math.round(nextIndex)];
+
+          onValueChange(nextValue === undefined ? 0 : nextValue);
+        }}
+      />
+      <View style={styles.sliderLabels}>
+        <ThemedText type="small" themeColor="textSecondary">Once</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">5–120 min</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">∞</ThemedText>
+      </View>
+    </View>
+  );
+}
+
 export function PlaybackSettingsSheet({
   isOpen,
   onClose,
@@ -113,14 +182,16 @@ export function PlaybackSettingsSheet({
     affirmationGapMs,
     musicVolume,
     voiceVolume,
-    loopBundleForever,
+    bundleRepeatDurationMinutes,
     selectedVoice,
   } =
     usePlaybackSettings();
   const setAffirmationGapMs = useSettingsStore((state) => state.setAffirmationGapMs);
   const setMusicVolume = useSettingsStore((state) => state.setMusicVolume);
   const setVoiceVolume = useSettingsStore((state) => state.setVoiceVolume);
-  const setLoopBundleForever = useSettingsStore((state) => state.setLoopBundleForever);
+  const setBundleRepeatDurationMinutes = useSettingsStore(
+    (state) => state.setBundleRepeatDurationMinutes,
+  );
   const setSelectedVoice = useSettingsStore((state) => state.setSelectedVoice);
 
   return (
@@ -152,26 +223,10 @@ export function PlaybackSettingsSheet({
             onValueChange={setVoiceVolume}
           />
 
-          <View style={styles.settingGroup}>
-            <View style={styles.settingHeader}>
-              <ThemedText type="smallBold">Loop bundle forever</ThemedText>
-              <ThemedText themeColor="textSecondary">
-                {loopBundleForever ? 'On' : 'Off'}
-              </ThemedText>
-            </View>
-            <View style={styles.choiceRow}>
-              <ChoiceChip
-                label="Off"
-                isSelected={!loopBundleForever}
-                onPress={() => setLoopBundleForever(false)}
-              />
-              <ChoiceChip
-                label="On"
-                isSelected={loopBundleForever}
-                onPress={() => setLoopBundleForever(true)}
-              />
-            </View>
-          </View>
+          <BundleRepeatSliderRow
+            value={bundleRepeatDurationMinutes}
+            onValueChange={setBundleRepeatDurationMinutes}
+          />
 
           <View style={styles.settingGroup}>
             <View style={styles.settingHeader}>
@@ -220,6 +275,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.two,
+  },
+  sliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   choiceChip: {
     borderRadius: 999,

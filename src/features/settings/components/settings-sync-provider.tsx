@@ -14,7 +14,7 @@ function serializePlaybackSettings(settings: PlaybackSettings) {
     affirmationGapMs: settings.affirmationGapMs,
     musicVolume: settings.musicVolume,
     voiceVolume: settings.voiceVolume,
-    loopBundleForever: settings.loopBundleForever,
+    bundleRepeatDurationMinutes: settings.bundleRepeatDurationMinutes,
     selectedVoice: settings.selectedVoice,
     selectedMusicTrackId: settings.selectedMusicTrackId,
   });
@@ -27,7 +27,9 @@ export function SettingsSyncProvider() {
   const affirmationGapMs = useSettingsStore((state) => state.affirmationGapMs);
   const musicVolume = useSettingsStore((state) => state.musicVolume);
   const voiceVolume = useSettingsStore((state) => state.voiceVolume);
-  const loopBundleForever = useSettingsStore((state) => state.loopBundleForever);
+  const bundleRepeatDurationMinutes = useSettingsStore(
+    (state) => state.bundleRepeatDurationMinutes,
+  );
   const selectedVoice = useSettingsStore((state) => state.selectedVoice);
   const selectedMusicTrackId = useSettingsStore((state) => state.selectedMusicTrackId);
   const replaceSettings = useSettingsStore((state) => state.replaceSettings);
@@ -46,13 +48,13 @@ export function SettingsSyncProvider() {
         affirmationGapMs,
         musicVolume,
         voiceVolume,
-        loopBundleForever,
+        bundleRepeatDurationMinutes,
         selectedVoice,
         selectedMusicTrackId,
       }),
     [
       affirmationGapMs,
-      loopBundleForever,
+      bundleRepeatDurationMinutes,
       musicVolume,
       selectedMusicTrackId,
       selectedVoice,

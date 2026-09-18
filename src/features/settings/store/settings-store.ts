@@ -6,8 +6,15 @@ import {
   DEFAULT_PLAYBACK_SETTINGS,
 } from '@/features/settings/config';
 import { playbackSettingsStorage } from '@/features/settings/services/settings-storage';
-import { normalizePlaybackSettings } from '@/features/settings/services/user-settings-service';
-import type { PlaybackSettings, PlaybackVoiceOption } from '@/features/settings/types';
+import {
+  normalizeBundleRepeatDurationMinutes,
+  normalizePlaybackSettings,
+} from '@/features/settings/services/user-settings-service';
+import type {
+  BundleRepeatDurationMinutes,
+  PlaybackSettings,
+  PlaybackVoiceOption,
+} from '@/features/settings/types';
 
 type SettingsStoreState = {
   // True once persisted local settings have been restored into the store.
@@ -15,13 +22,13 @@ type SettingsStoreState = {
   affirmationGapMs: number;
   musicVolume: number;
   voiceVolume: number;
-  loopBundleForever: boolean;
+  bundleRepeatDurationMinutes: BundleRepeatDurationMinutes;
   selectedVoice: PlaybackVoiceOption;
   selectedMusicTrackId: string | null;
   setAffirmationGapMs: (value: number) => void;
   setMusicVolume: (value: number) => void;
   setVoiceVolume: (value: number) => void;
-  setLoopBundleForever: (value: boolean) => void;
+  setBundleRepeatDurationMinutes: (value: BundleRepeatDurationMinutes) => void;
   setSelectedVoice: (value: PlaybackVoiceOption) => void;
   setSelectedMusicTrackId: (value: string | null) => void;
   replaceSettings: (value: PlaybackSettings) => void;
@@ -47,7 +54,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
       affirmationGapMs: DEFAULT_PLAYBACK_SETTINGS.affirmationGapMs,
       musicVolume: DEFAULT_PLAYBACK_SETTINGS.musicVolume,
       voiceVolume: DEFAULT_PLAYBACK_SETTINGS.voiceVolume,
-      loopBundleForever: DEFAULT_PLAYBACK_SETTINGS.loopBundleForever,
+      bundleRepeatDurationMinutes: DEFAULT_PLAYBACK_SETTINGS.bundleRepeatDurationMinutes,
       selectedVoice: DEFAULT_PLAYBACK_SETTINGS.selectedVoice,
       selectedMusicTrackId: DEFAULT_PLAYBACK_SETTINGS.selectedMusicTrackId,
       setAffirmationGapMs: (value) => {
@@ -65,9 +72,9 @@ export const useSettingsStore = create<SettingsStoreState>()(
           voiceVolume: clampUnitValue(value),
         });
       },
-      setLoopBundleForever: (value) => {
+      setBundleRepeatDurationMinutes: (value) => {
         set({
-          loopBundleForever: value,
+          bundleRepeatDurationMinutes: normalizeBundleRepeatDurationMinutes(value),
         });
       },
       setSelectedVoice: (value) => {
@@ -87,7 +94,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
           affirmationGapMs: normalized.affirmationGapMs,
           musicVolume: normalized.musicVolume,
           voiceVolume: normalized.voiceVolume,
-          loopBundleForever: normalized.loopBundleForever,
+          bundleRepeatDurationMinutes: normalized.bundleRepeatDurationMinutes,
           selectedVoice: normalized.selectedVoice,
           selectedMusicTrackId: normalized.selectedMusicTrackId,
         });
@@ -105,7 +112,7 @@ export const useSettingsStore = create<SettingsStoreState>()(
         affirmationGapMs: state.affirmationGapMs,
         musicVolume: state.musicVolume,
         voiceVolume: state.voiceVolume,
-        loopBundleForever: state.loopBundleForever,
+        bundleRepeatDurationMinutes: state.bundleRepeatDurationMinutes,
         selectedVoice: state.selectedVoice,
         selectedMusicTrackId: state.selectedMusicTrackId,
       }),
@@ -113,7 +120,6 @@ export const useSettingsStore = create<SettingsStoreState>()(
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
-      version: 1,
     },
   ),
 );

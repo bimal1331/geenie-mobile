@@ -1,5 +1,9 @@
 import { AVAILABLE_PLAYBACK_VOICES, DEFAULT_PLAYBACK_SETTINGS } from '@/features/settings/config';
-import type { PlaybackSettings, PlaybackVoiceOption } from '@/features/settings/types';
+import type {
+  BundleRepeatDurationMinutes,
+  PlaybackSettings,
+  PlaybackVoiceOption,
+} from '@/features/settings/types';
 import { getSupabaseClient } from '@/services/supabase/client';
 
 type UserSettingsRow = {
@@ -7,13 +11,27 @@ type UserSettingsRow = {
   affirmation_gap: number;
   music_volume: number;
   voice_volume: number;
-  loop_bundle: boolean;
+  bundle_repeat_duration_minutes: number | null;
   selected_voice_provider_id: string;
   selected_music_track_id: string | null;
 };
 
 function clampUnitValue(value: number) {
   return Math.max(0, Math.min(1, value));
+}
+
+export function normalizeBundleRepeatDurationMinutes(
+  value: BundleRepeatDurationMinutes,
+): BundleRepeatDurationMinutes {
+  if (value === null) {
+    return null;
+  }
+
+  if (!Number.isFinite(value)) {
+    return DEFAULT_PLAYBACK_SETTINGS.bundleRepeatDurationMinutes;
+  }
+
+  return Math.max(0, Math.min(120, Math.round(value)));
 }
 
 function resolveSelectedVoice(option: PlaybackVoiceOption): PlaybackVoiceOption {
@@ -41,7 +59,9 @@ export function normalizePlaybackSettings(settings: PlaybackSettings): PlaybackS
     affirmationGapMs: Math.max(0, Math.min(30000, Math.round(settings.affirmationGapMs))),
     musicVolume: clampUnitValue(settings.musicVolume),
     voiceVolume: clampUnitValue(settings.voiceVolume),
-    loopBundleForever: settings.loopBundleForever,
+    bundleRepeatDurationMinutes: normalizeBundleRepeatDurationMinutes(
+      settings.bundleRepeatDurationMinutes,
+    ),
     selectedVoice: resolveSelectedVoice(settings.selectedVoice),
     selectedMusicTrackId: settings.selectedMusicTrackId?.trim() || null,
   };
@@ -52,7 +72,7 @@ function mapRowToPlaybackSettings(row: UserSettingsRow): PlaybackSettings {
     affirmationGapMs: row.affirmation_gap,
     musicVolume: row.music_volume,
     voiceVolume: row.voice_volume,
-    loopBundleForever: row.loop_bundle,
+    bundleRepeatDurationMinutes: row.bundle_repeat_duration_minutes,
     selectedVoice: resolveSelectedVoiceByProviderId(row.selected_voice_provider_id),
     selectedMusicTrackId: row.selected_music_track_id,
   });
@@ -66,7 +86,7 @@ function mapPlaybackSettingsToRow(userId: string, settings: PlaybackSettings): U
     affirmation_gap: normalized.affirmationGapMs,
     music_volume: normalized.musicVolume,
     voice_volume: normalized.voiceVolume,
-    loop_bundle: normalized.loopBundleForever,
+    bundle_repeat_duration_minutes: normalized.bundleRepeatDurationMinutes,
     selected_voice_provider_id: normalized.selectedVoice.providerVoiceId,
     selected_music_track_id: normalized.selectedMusicTrackId,
   };
@@ -81,7 +101,7 @@ export async function fetchUserPlaybackSettings(userId: string): Promise<Playbac
       affirmation_gap,
       music_volume,
       voice_volume,
-      loop_bundle,
+      bundle_repeat_duration_minutes,
       selected_voice_provider_id,
       selected_music_track_id
     `)

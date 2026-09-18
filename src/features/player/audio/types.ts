@@ -13,7 +13,7 @@ export type PlayerSessionSnapshot = {
 
 export type PlayerAudioSettingsSnapshot = {
   affirmationGapMs: number;
-  loopBundleForever: boolean;
+  bundleRepeatDurationMinutes: number | null;
   voiceVolume: number;
   musicVolume: number;
 };

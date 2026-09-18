@@ -24,8 +24,18 @@ source; screens use different display crops rather than separate images.
 **Why:** The selected direction stays close to the earlier interface while
 giving cover art more presence and keeping the catalog scannable.
 
+## 2026-09-17 — Bundle repeat control
+
+**Decision:** Playback settings use one discrete slider for bundle repetition:
+**Once**, 5-minute intervals from **5 min** through **120 min**, and **∞**.
+
+The persisted contract remains more flexible than the current UI: `0` means
+play once, `1–120` means repeat for that number of minutes, and `null` means
+repeat indefinitely. A timed repeat finishes its current bundle cycle before
+stopping. After a bundle finishes, Play starts a fresh run from its first
+affirmation.
+
 ## Maintenance rule
 
 Add an entry only after a product/design direction is approved and would affect
 future UI work. Update an existing entry when the direction is replaced.
-
