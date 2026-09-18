@@ -35,6 +35,14 @@ repeat indefinitely. A timed repeat finishes its current bundle cycle before
 stopping. After a bundle finishes, Play starts a fresh run from its first
 affirmation.
 
+## 2026-09-18 — Profile scope
+
+**Decision:** Profile is an account-and-returning-listener space, not a second
+playback-settings screen. It contains email sign-in/account state, a direct
+path to the signed-in library, and compact app information. Voice, music, gap,
+and repeat controls remain in the player where they can be adjusted while
+listening.
+
 ## Maintenance rule
 
 Add an entry only after a product/design direction is approved and would affect

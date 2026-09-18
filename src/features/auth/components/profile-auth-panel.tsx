@@ -11,6 +11,10 @@ import { useTheme } from '@/hooks/use-theme';
 
 type AuthStep = 'email' | 'code';
 
+function getAccountMonogram(value: string | null | undefined) {
+  return value?.trim().charAt(0).toUpperCase() || 'G';
+}
+
 export function ProfileAuthPanel() {
   const theme = useTheme();
   const { isAuthenticated, isLoading, profile } = useAuth();
@@ -122,16 +126,29 @@ export function ProfileAuthPanel() {
   }
 
   if (isAuthenticated) {
+    const accountLabel = profile?.displayName || profile?.email || 'Geenie user';
+
     return (
       <SectionCard
         title="Account"
-        description="Your account is active on this device, so your personal library and future saved progress can stay attached to you.">
+        description="Your saved bundles and listening preferences stay connected to this account.">
         <ThemedView type="background" style={styles.accountCard}>
-          <ThemedText type="smallBold">Signed in</ThemedText>
-          <ThemedText>{profile?.displayName || profile?.email || 'Geenie user'}</ThemedText>
-          {profile?.email ? (
-            <ThemedText themeColor="textSecondary">{profile.email}</ThemedText>
-          ) : null}
+          <View style={styles.accountIdentity}>
+            <ThemedView type="backgroundSelected" style={styles.monogram}>
+              <ThemedText type="smallBold">{getAccountMonogram(accountLabel)}</ThemedText>
+            </ThemedView>
+            <View style={styles.accountDetails}>
+              <ThemedText type="smallBold">{accountLabel}</ThemedText>
+              {profile?.email ? (
+                <ThemedText type="small" themeColor="textSecondary">
+                  {profile.email}
+                </ThemedText>
+              ) : null}
+            </View>
+          </View>
+          <ThemedText type="small" themeColor="textSecondary">
+            Signed in on this device
+          </ThemedText>
         </ThemedView>
 
         <View style={styles.actionRow}>
@@ -160,7 +177,7 @@ export function ProfileAuthPanel() {
   return (
     <SectionCard
       title="Sign in or create account"
-      description="Guests can keep browsing the app. Sign in when you want saved bundles, playlists, favorites, and other personal features to follow you across devices.">
+      description="Guests can keep browsing. Sign in to keep saved bundles and playback preferences with you across devices.">
       <View style={styles.formColumn}>
         <View style={styles.fieldColumn}>
           <ThemedText type="smallBold">Email</ThemedText>
@@ -190,6 +207,7 @@ export function ProfileAuthPanel() {
               autoCapitalize="none"
               keyboardType="number-pad"
               maxLength={6}
+              textContentType="oneTimeCode"
               onChangeText={setCode}
               placeholder="123456"
               placeholderTextColor={theme.textSecondary}
@@ -343,7 +361,23 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.four,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
-    gap: Spacing.one,
+    gap: Spacing.two,
+  },
+  accountIdentity: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+  monogram: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accountDetails: {
+    flex: 1,
+    gap: Spacing.half,
   },
   pressed: {
     opacity: 0.82,
