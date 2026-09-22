@@ -8,6 +8,7 @@ export type BundleSummary = {
   coverImageUrl: string | null;
   affirmationCount: number;
   isPremium: boolean;
+  isLocked: boolean;
 };
 
 export type BundleDetailItem = {

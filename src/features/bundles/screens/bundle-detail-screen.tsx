@@ -75,6 +75,15 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
     }
   }
 
+  function handlePlay() {
+    if (!bundle || bundle.isLocked) {
+      return;
+    }
+
+    playBundle(bundle);
+    router.push(`/player/${bundle.slug}`);
+  }
+
   return (
     <AppScreen
       headerLeft={
@@ -138,17 +147,39 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
       ) : null}
 
       {!isLoading && !error && bundle && bundle.items.length > 0 ? (
-        <View style={styles.actionRow}>
-          <Pressable
-            onPress={() => {
-              playBundle(bundle);
-              router.push(`/player/${bundle.slug}`);
-            }}
-            style={({ pressed }) => [styles.actionButtonPressable, pressed && styles.pressed]}>
-            <ThemedView type="backgroundSelected" style={styles.startButton}>
-              <ThemedText type="smallBold">Play</ThemedText>
+        <>
+          {bundle.isLocked ? (
+            <ThemedView
+              type="backgroundElement"
+              style={[
+                styles.lockedNotice,
+                { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+              ]}>
+              <SymbolView name="lock.fill" tintColor={theme.accentSecondary} size={16} />
+              <ThemedText themeColor="textSecondary" style={styles.lockedNoticeText}>
+                Premium required to play this bundle. You can read the first five affirmations below.
+              </ThemedText>
             </ThemedView>
-          </Pressable>
+          ) : null}
+
+          <View style={styles.actionRow}>
+            <Pressable
+              accessibilityState={{ disabled: bundle.isLocked }}
+              disabled={bundle.isLocked}
+              onPress={handlePlay}
+              style={({ pressed }) => [
+                styles.actionButtonPressable,
+                bundle.isLocked && styles.disabled,
+                pressed && styles.pressed,
+              ]}>
+              <ThemedView
+                type={bundle.isLocked ? 'backgroundElement' : 'backgroundSelected'}
+                style={styles.startButton}>
+                <ThemedText type="smallBold">
+                  {bundle.isLocked ? 'Premium required' : 'Play'}
+                </ThemedText>
+              </ThemedView>
+            </Pressable>
 
           <Pressable
             disabled={authStatus === 'loading' || isSaving}
@@ -183,8 +214,9 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
                       : 'Save to Library'}
               </ThemedText>
             </ThemedView>
-          </Pressable>
-        </View>
+            </Pressable>
+          </View>
+        </>
       ) : null}
 
       {saveError ? (
@@ -248,6 +280,22 @@ const styles = StyleSheet.create({
   },
   actionButtonPressable: {
     flex: 1,
+  },
+  disabled: {
+    opacity: 0.56,
+  },
+  lockedNotice: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.two,
+    borderRadius: Spacing.four,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    borderWidth: 1,
+  },
+  lockedNoticeText: {
+    flex: 1,
+    lineHeight: 20,
   },
   saveButton: {
     borderRadius: 999,

@@ -24,6 +24,15 @@ source; screens use different display crops rather than separate images.
 **Why:** The selected direction stays close to the earlier interface while
 giving cover art more presence and keeping the catalog scannable.
 
+## 2026-09-22 — Premium access presentation
+
+**Decision:** Premium bundles remain discoverable in Explore and Library. A
+viewer without an active entitlement sees a lock badge, can still save the
+bundle when signed in, and can read its first five affirmations on the detail
+screen. Playback is unavailable until the server returns the bundle as
+unlocked. The mobile app uses the API's `isLocked` flag as the single playback
+gate; `isPremium` remains only editorial labeling.
+
 ## 2026-09-17 — Bundle repeat control
 
 **Decision:** Playback settings use one discrete slider for bundle repetition:
@@ -38,8 +47,8 @@ affirmation.
 ## 2026-09-18 — Profile scope
 
 **Decision:** Profile is an account-and-returning-listener space, not a second
-playback-settings screen. It contains email sign-in/account state, a direct
-path to the signed-in library, and compact app information. Voice, music, gap,
+playback-settings screen. It contains email sign-in/account state and compact
+app information. Voice, music, gap,
 and repeat controls remain in the player where they can be adjusted while
 listening.
 

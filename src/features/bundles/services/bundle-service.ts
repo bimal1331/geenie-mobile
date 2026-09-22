@@ -7,7 +7,9 @@ import {
 } from '@/features/player/config';
 
 export async function listBundleCatalog(): Promise<BundleSummary[]> {
-  const response = await apiGet<{ bundles: BundleSummary[] }>('/api/mobile/bundles');
+  const response = await apiGet<{ bundles: BundleSummary[] }>('/api/mobile/bundles', {
+    auth: 'optional',
+  });
   return response.bundles;
 }
 

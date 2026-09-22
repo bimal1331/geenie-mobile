@@ -46,10 +46,11 @@ Explore or Library screen
   -> player store and audio coordinator
 ```
 
-Guests can browse and play guest-safe content. Signing in enables saved bundles
-and syncs playback settings to `public.user_settings`.
+Guests can browse and play free content. The admin API resolves a viewer-specific
+`isLocked` field for Premium bundles; locked detail responses contain only five
+text previews and no audio URLs. Signing in enables saved bundles and syncs
+playback settings to `public.user_settings`.
 
 The canonical mobile API contract lives in the sibling Admin repository at
 `geenie-admin/docs/MOBILE_API.md`. Do not duplicate endpoint contracts here;
 update that document when changing the backend contract.
-

@@ -63,7 +63,14 @@ export function BundleListCard({ bundle, onPress, variant = 'card' }: BundleList
                 </ThemedText>
                 {bundle.isPremium ? (
                   <ThemedView type="backgroundSelected" style={styles.stripBadge}>
-                    <ThemedText type="smallBold">Premium</ThemedText>
+                    <View style={styles.badgeLabel}>
+                      {bundle.isLocked ? (
+                        <SymbolView name="lock.fill" tintColor={theme.text} size={12} />
+                      ) : null}
+                      <ThemedText type="smallBold">
+                        {bundle.isLocked ? 'Locked' : 'Premium'}
+                      </ThemedText>
+                    </View>
                   </ThemedView>
                 ) : null}
               </View>
@@ -112,7 +119,12 @@ export function BundleListCard({ bundle, onPress, variant = 'card' }: BundleList
         <View style={styles.headerRow}>
           {bundle.isPremium ? (
             <ThemedView type="backgroundSelected" style={styles.badge}>
-              <ThemedText type="smallBold">Premium</ThemedText>
+              <View style={styles.badgeLabel}>
+                {bundle.isLocked ? (
+                  <SymbolView name="lock.fill" tintColor={theme.text} size={12} />
+                ) : null}
+                <ThemedText type="smallBold">{bundle.isLocked ? 'Locked' : 'Premium'}</ThemedText>
+              </View>
             </ThemedView>
           ) : null}
         </View>
@@ -208,6 +220,11 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.half,
+  },
+  badgeLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.half,
   },
   chevronButton: {
     width: 42,

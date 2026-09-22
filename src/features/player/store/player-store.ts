@@ -81,6 +81,15 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   selectedMusicTrack: null,
 
   playBundle: (bundle, startIndex = 0) => {
+    if (bundle.isLocked) {
+      set({
+        playbackError: 'Premium membership is required to play this bundle.',
+        isPlaying: false,
+        isInAffirmationGap: false,
+      });
+      return;
+    }
+
     const queue = toPlayableQueue(bundle.items);
     const safeIndex = queue.length > 0 ? Math.max(0, Math.min(startIndex, queue.length - 1)) : 0;
 

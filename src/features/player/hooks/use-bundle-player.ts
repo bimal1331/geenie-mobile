@@ -20,9 +20,17 @@ export function useBundlePlayer(slug: string | null) {
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const playbackError = usePlayerStore((state) => state.playbackError);
   const playBundle = usePlayerStore((state) => state.playBundle);
+  const clearPlayer = usePlayerStore((state) => state.clearPlayer);
 
   useEffect(() => {
     if (!bundle) {
+      return;
+    }
+
+    if (bundle.isLocked) {
+      if (activeBundleSlug || queue.length > 0 || isPlaying || playbackError) {
+        clearPlayer();
+      }
       return;
     }
 
@@ -45,7 +53,16 @@ export function useBundlePlayer(slug: string | null) {
     }
 
     playBundle(bundle, currentIndex);
-  }, [activeBundleSlug, bundle, currentIndex, playBundle, queue]);
+  }, [
+    activeBundleSlug,
+    bundle,
+    clearPlayer,
+    currentIndex,
+    isPlaying,
+    playbackError,
+    playBundle,
+    queue,
+  ]);
 
   const totalAffirmations = queue.length;
 
@@ -68,8 +85,10 @@ export function useBundlePlayer(slug: string | null) {
   }, [bundle, bundleDescription, bundleTitle, currentIndex, isPlaying, queue, totalAffirmations]);
 
   return {
-    isLoading: queue.length === 0 ? isLoading : false,
-    error: playbackError ?? (queue.length === 0 ? error : null),
+    isLoading: bundle?.isLocked ? false : queue.length === 0 ? isLoading : false,
+    error: bundle?.isLocked
+      ? 'Premium membership is required to play this bundle.'
+      : playbackError ?? (queue.length === 0 ? error : null),
     session,
     canGoPrevious: session.currentIndex > 0,
     canGoNext: session.currentIndex < Math.max(session.totalAffirmations - 1, 0),

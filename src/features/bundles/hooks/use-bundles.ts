@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { listBundleCatalog } from '@/features/bundles/services/bundle-service';
 import { BundleSummary } from '@/features/bundles/types';
+import { useAuthStore } from '@/features/auth/store/auth-store';
 
 type UseBundlesState = {
   bundles: BundleSummary[];
@@ -10,6 +11,8 @@ type UseBundlesState = {
 };
 
 export function useBundles() {
+  const authStatus = useAuthStore((state) => state.status);
+  const session = useAuthStore((state) => state.session);
   const [state, setState] = useState<UseBundlesState>({
     bundles: [],
     isLoading: true,
@@ -55,7 +58,7 @@ export function useBundles() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [authStatus, session?.userId]);
 
   return state;
 }
