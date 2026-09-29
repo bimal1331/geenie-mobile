@@ -31,6 +31,8 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const remainingAffirmationCount =
+    bundle?.isLocked ? Math.max(bundle.affirmationCount - 5, 0) : 0;
 
   useEffect(() => {
     setIsSaved(Boolean(bundle?.isSaved));
@@ -244,6 +246,33 @@ export function BundleDetailScreen({ slug }: BundleDetailScreenProps) {
             </ThemedText>
           </ThemedView>
         ))}
+
+      {!isLoading &&
+        !error &&
+        bundle?.isLocked &&
+        remainingAffirmationCount > 0 ? (
+        <ThemedView
+          type="backgroundSelected"
+          style={[
+            styles.moreAffirmationsCard,
+            { backgroundColor: theme.backgroundSelected, borderColor: theme.borderSoft },
+          ]}>
+          <SymbolView name="sparkles" tintColor={theme.accentSecondary} size={20} />
+          <View style={styles.moreAffirmationsCopy}>
+            <ThemedText
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+              numberOfLines={1}
+              style={[styles.moreAffirmationsTitle, { color: theme.textDisplay }]}>
+              {remainingAffirmationCount} more{' '}
+              {remainingAffirmationCount === 1 ? 'affirmation' : 'affirmations'}
+            </ThemedText>
+            <ThemedText themeColor="textSecondary" style={styles.moreAffirmationsHint}>
+              Unlock Premium to continue with the full bundle.
+            </ThemedText>
+          </View>
+        </ThemedView>
+      ) : null}
     </AppScreen>
   );
 }
@@ -315,6 +344,28 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 18,
     lineHeight: 28,
+  },
+  moreAffirmationsCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    borderRadius: Spacing.four,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.four,
+    borderWidth: 1,
+  },
+  moreAffirmationsCopy: {
+    flex: 1,
+    gap: Spacing.half,
+  },
+  moreAffirmationsTitle: {
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: 600,
+  },
+  moreAffirmationsHint: {
+    fontSize: 15,
+    lineHeight: 21,
   },
   coverFrame: {
     aspectRatio: 16 / 9,

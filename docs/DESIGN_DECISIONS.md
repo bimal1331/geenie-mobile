@@ -31,7 +31,9 @@ viewer without an active entitlement sees a lock badge, can still save the
 bundle when signed in, and can read its first five affirmations on the detail
 screen. Playback is unavailable until the server returns the bundle as
 unlocked. The mobile app uses the API's `isLocked` flag as the single playback
-gate; `isPremium` remains only editorial labeling.
+gate; `isPremium` remains only editorial labeling. When a preview omits more
+affirmations, a continuation card directly below the five previews communicates
+the remaining count and the Premium value.
 
 ## 2026-09-17 — Bundle repeat control
 
