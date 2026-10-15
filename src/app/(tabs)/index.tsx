@@ -1,6 +1,7 @@
 import { AppScreen } from '@/components/app-screen';
 import { StyleSheet } from 'react-native';
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { ContinueListeningSection } from '@/features/player/components/continue-listening-section';
 import { DailyRhythmSection } from '@/features/practice/components/daily-rhythm-section';
 
 function greetingForCurrentTime() {
@@ -21,6 +22,7 @@ export default function HomeScreen() {
       title={`${greetingForCurrentTime()}, ${displayName}`}
       titleStyle={styles.greetingTitle}>
       <DailyRhythmSection />
+      <ContinueListeningSection />
     </AppScreen>
   );
 }

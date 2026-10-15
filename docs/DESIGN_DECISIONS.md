@@ -74,6 +74,16 @@ and an optional reminder.
 - Tapping a reminder opens the scheduled bundle; it never starts audio
   automatically.
 
+## 2026-10-15 — Continue listening
+
+**Decision:** Home offers one device-local **Continue listening** item for an
+incomplete bundle. It resumes at the current affirmation, not at a position
+within an audio track. The record is cleared when the bundle finishes and the
+bundle is fetched again before resuming, preserving current availability,
+premium access, and audio URLs without requiring a progress API.
+When a bundle is still loaded in the active app session, the global mini-player
+is the sole resume control and Home suppresses the duplicate card.
+
 ## Maintenance rule
 
 Add an entry only after a product/design direction is approved and would affect

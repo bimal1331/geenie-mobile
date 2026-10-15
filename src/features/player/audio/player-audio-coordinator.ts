@@ -8,6 +8,7 @@ import type {
   PlayerAudioSettingsSnapshot,
   PlayerSessionSnapshot,
 } from '@/features/player/audio/types';
+import { clearContinueListeningProgress } from '@/features/player/services/continue-listening-service';
 import { usePlayerStore } from '@/features/player/store/player-store';
 
 /**
@@ -280,6 +281,7 @@ export class PlayerAudioCoordinator {
       this.pendingAdvanceIndex = null;
       this.hasCompletedBundle = true;
       this.musicEngine.pause();
+      void clearContinueListeningProgress();
       return;
     }
 

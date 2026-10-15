@@ -5,6 +5,7 @@ import {
   disposePlayerAudioCoordinator,
   getPlayerAudioCoordinator,
 } from '@/features/player/audio/player-audio-coordinator';
+import { saveContinueListeningProgress } from '@/features/player/services/continue-listening-service';
 import { usePlayerStore } from '@/features/player/store/player-store';
 import { usePlaybackSettings } from '@/features/settings/hooks/use-playback-settings';
 import { useSettingsStore } from '@/features/settings/store/settings-store';
@@ -52,6 +53,22 @@ export function PlayerAudioProvider() {
       isPlaying,
     });
   }, [activeBundleSlug, bundleCoverImageUrl, bundleTitle, coordinator, currentIndex, isPlaying, queue, sessionRevision]);
+
+  // This is intentionally device-local. The actual bundle is fetched again before a resume,
+  // so content availability, entitlement, and fresh audio URLs are always respected.
+  useEffect(() => {
+    if (!activeBundleSlug || !bundleTitle || queue.length === 0 || !isPlaying) {
+      return;
+    }
+
+    void saveContinueListeningProgress({
+      bundleSlug: activeBundleSlug,
+      bundleTitle,
+      bundleCoverImageUrl,
+      currentIndex: Math.min(currentIndex, queue.length - 1),
+      totalAffirmations: queue.length,
+    });
+  }, [activeBundleSlug, bundleCoverImageUrl, bundleTitle, currentIndex, isPlaying, queue.length]);
 
   // Player-level settings affect both the spoken-voice player and the background music engine.
   useEffect(() => {
