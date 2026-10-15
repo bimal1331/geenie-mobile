@@ -1,20 +1,34 @@
-import { AppScreen, SectionCard } from '@/components/app-screen';
-import { ThemedText } from '@/components/themed-text';
+import { AppScreen } from '@/components/app-screen';
+import { StyleSheet } from 'react-native';
+import { useAuth } from '@/features/auth/hooks/use-auth';
+import { DailyRhythmSection } from '@/features/practice/components/daily-rhythm-section';
+
+function greetingForCurrentTime() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
 
 export default function HomeScreen() {
+  const { profile } = useAuth();
+  const displayName = profile?.displayName?.trim() || 'there';
+
   return (
     <AppScreen
       eyebrow="Daily practice"
-      title="Welcome to Geenie"
-      description="A calm home for affirmation practice, curated bundles, and a personal listening rhythm that can travel with you through the day.">
-      <SectionCard
-        title="Today’s flow"
-        description="This home surface will become the launch point for your next bundle, your current streak, and the moments you want to revisit.">
-        <ThemedText themeColor="textSecondary">
-          We&apos;ll wire the real data next. For now, the shell is ready for Home, Bundles,
-          Library, and Profile to grow into the app.
-        </ThemedText>
-      </SectionCard>
+      title={`${greetingForCurrentTime()}, ${displayName}`}
+      titleStyle={styles.greetingTitle}>
+      <DailyRhythmSection />
     </AppScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  greetingTitle: {
+    fontSize: 30,
+    lineHeight: 36,
+    letterSpacing: -0.4,
+  },
+});

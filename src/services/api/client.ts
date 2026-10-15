@@ -2,7 +2,7 @@ import { getApiBaseUrl } from '@/services/api/config';
 import { getSupabaseClient } from '@/services/supabase/client';
 
 type ApiRequestOptions = {
-  method?: 'GET' | 'POST' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: BodyInit | null;
   auth?: 'none' | 'optional' | 'required';
 };
@@ -46,6 +46,11 @@ async function apiRequest<TResponse>(path: string, options: ApiRequestOptions = 
       method: options.method ?? 'GET',
       headers: {
         Accept: 'application/json',
+        ...(typeof options.body === 'string'
+          ? {
+              'Content-Type': 'application/json',
+            }
+          : {}),
         ...(accessToken
           ? {
               Authorization: `Bearer ${accessToken}`,
@@ -144,5 +149,16 @@ export async function apiDelete<TResponse>(
   return apiRequest<TResponse>(path, {
     method: 'DELETE',
     auth: options.auth ?? 'none',
+  });
+}
+
+export async function apiPatch<TResponse>(
+  path: string,
+  options: Pick<ApiRequestOptions, 'auth' | 'body'> = {},
+): Promise<TResponse> {
+  return apiRequest<TResponse>(path, {
+    method: 'PATCH',
+    auth: options.auth ?? 'none',
+    body: options.body ?? null,
   });
 }

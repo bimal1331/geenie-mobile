@@ -4,6 +4,8 @@ import { StyleSheet, View, useColorScheme } from 'react-native';
 
 import { AuthProvider } from '@/features/auth/components/auth-provider';
 import { PlayerAudioProvider } from '@/features/player/audio/player-audio-provider';
+import { PracticeNotificationProvider } from '@/features/practice/components/practice-notification-provider';
+import { PracticeReminderSyncProvider } from '@/features/practice/components/practice-reminder-sync-provider';
 import { SettingsSyncProvider } from '@/features/settings/components/settings-sync-provider';
 
 SplashScreen.preventAutoHideAsync();
@@ -16,6 +18,8 @@ export default function TabLayout() {
       <View style={styles.root}>
         <AuthProvider />
         <SettingsSyncProvider />
+        <PracticeNotificationProvider />
+        <PracticeReminderSyncProvider />
         <PlayerAudioProvider />
         <Stack screenOptions={{ headerShown: false }} />
       </View>

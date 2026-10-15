@@ -12,13 +12,14 @@
 
 ```text
 (tabs)
-  Home        placeholder for daily listening flow
+  Home        daily rhythm and practice launch point
   Explore     published bundle catalog
   Library     signed-in user's saved bundles
   Profile     email OTP account flow
 
 /bundles/:slug  bundle detail
 /player/:slug   bundle player
+/practice/:id   create or edit a recurring practice (`new` creates one)
 ```
 
 The tab layout also renders the mini-player dock. Root providers initialize
@@ -32,6 +33,8 @@ authentication, settings synchronization, and player audio coordination.
 - `features/music`: background-music catalog
 - `features/auth`: email OTP and app-owned session shape
 - `features/settings`: local persistence and signed-in user-settings sync
+- `features/practice`: signed-in recurring bundle plans, Home's daily-rhythm
+  surface, and device-local reminder scheduling
 - `services/api`: authenticated/optional request client for admin-hosted mobile
   endpoints
 
@@ -50,6 +53,12 @@ Guests can browse and play free content. The admin API resolves a viewer-specifi
 `isLocked` field for Premium bundles; locked detail responses contain only five
 text previews and no audio URLs. Signing in enables saved bundles and syncs
 playback settings to `public.user_settings`.
+
+Practice plans are synced through the mobile API into `public.user_practice_slots`.
+The plan itself is server-owned; Expo local-notification identifiers stay on the
+device and are rebuilt whenever the signed-in plan is refreshed. This avoids a
+push-notification server for explicit user schedules while preserving the plan
+across devices and reinstalls.
 
 The canonical mobile API contract lives in the sibling Admin repository at
 `geenie-admin/docs/MOBILE_API.md`. Do not duplicate endpoint contracts here;

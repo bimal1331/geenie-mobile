@@ -54,6 +54,26 @@ app information. Voice, music, gap,
 and repeat controls remain in the player where they can be adjusted while
 listening.
 
+## 2026-10-14 — Home daily practice
+
+**Decision:** Home is the personal starting point for regular listening through
+**Your daily rhythm**. Signed-in users can create up to three named practices,
+each pairing a published, accessible bundle with a local time, selected days,
+and an optional reminder.
+
+- Home prioritizes the next practice and a one-tap **Play now** action, then
+  shows later scheduled practices.
+- The Home greeting is compact and does not need supporting copy; the next
+  practice and each later practice use separate surfaces rather than one shared
+  schedule card, so they remain visually distinct and scannable.
+- The practice builder uses a simple named moment, time, day chips, bundle
+  selection, and reminder toggle; it does not introduce per-practice playback
+  duration in the first version.
+- Guests see the value of the feature and are directed to sign in rather than
+  receiving a device-only plan that cannot be restored.
+- Tapping a reminder opens the scheduled bundle; it never starts audio
+  automatically.
+
 ## Maintenance rule
 
 Add an entry only after a product/design direction is approved and would affect

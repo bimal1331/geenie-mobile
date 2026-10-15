@@ -61,6 +61,7 @@ Supabase Auth
 public.users
       |
       +--> public.user_settings
+      +--> public.user_practice_slots
       +--> future favorites / playlists / library / progress
 ```
 

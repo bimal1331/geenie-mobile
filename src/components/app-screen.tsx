@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, type StyleProp, type TextStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 
@@ -13,7 +13,8 @@ type AppScreenProps = {
   headerRight?: ReactNode;
   eyebrow?: string;
   title: string;
-  description: string;
+  titleStyle?: StyleProp<TextStyle>;
+  description?: string;
   children?: ReactNode;
 };
 
@@ -24,6 +25,7 @@ export function AppScreen({
   headerRight,
   eyebrow,
   title,
+  titleStyle,
   description,
   children,
 }: AppScreenProps) {
@@ -52,12 +54,14 @@ export function AppScreen({
                 </ThemedText>
               </ThemedView>
             ) : null}
-            <ThemedText type="title" style={styles.title}>
+            <ThemedText type="title" style={[styles.title, titleStyle]}>
               {title}
             </ThemedText>
-            <ThemedText themeColor="textSecondary" style={styles.description}>
-              {description}
-            </ThemedText>
+            {description ? (
+              <ThemedText themeColor="textSecondary" style={styles.description}>
+                {description}
+              </ThemedText>
+            ) : null}
           </View>
 
           <View style={styles.body}>{children}</View>
