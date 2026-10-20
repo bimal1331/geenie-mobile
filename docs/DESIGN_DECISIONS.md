@@ -63,9 +63,9 @@ and an optional reminder.
 
 - Home prioritizes the next practice and a one-tap **Play now** action, then
   shows later scheduled practices.
-- The Home greeting is compact and does not need supporting copy; the next
-  practice and each later practice use separate surfaces rather than one shared
-  schedule card, so they remain visually distinct and scannable.
+- Home does not use a large greeting or supporting copy; the next practice and
+  each later practice use separate surfaces rather than one shared schedule
+  card, so they remain visually distinct and scannable.
 - The practice builder uses a simple named moment, time, day chips, bundle
   selection, and reminder toggle; it does not introduce per-practice playback
   duration in the first version.

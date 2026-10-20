@@ -12,7 +12,7 @@ type AppScreenProps = {
   headerLeft?: ReactNode;
   headerRight?: ReactNode;
   eyebrow?: string;
-  title: string;
+  title?: string;
   titleStyle?: StyleProp<TextStyle>;
   description?: string;
   children?: ReactNode;
@@ -54,9 +54,11 @@ export function AppScreen({
                 </ThemedText>
               </ThemedView>
             ) : null}
-            <ThemedText type="title" style={[styles.title, titleStyle]}>
-              {title}
-            </ThemedText>
+            {title ? (
+              <ThemedText type="title" style={[styles.title, titleStyle]}>
+                {title}
+              </ThemedText>
+            ) : null}
             {description ? (
               <ThemedText themeColor="textSecondary" style={styles.description}>
                 {description}
