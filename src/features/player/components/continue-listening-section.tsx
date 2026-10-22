@@ -135,7 +135,7 @@ export function ContinueListeningSection() {
 
 const styles = StyleSheet.create({
   section: { gap: Spacing.two },
-  sectionTitle: { fontSize: 25, lineHeight: 30 },
+  sectionTitle: { fontSize: 22, lineHeight: 27 },
   card: { borderRadius: Spacing.four, borderWidth: 1, padding: Spacing.four, gap: Spacing.three },
   bundleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   cover: { width: 82, height: 82, borderRadius: Spacing.three, alignItems: 'center', justifyContent: 'center' },

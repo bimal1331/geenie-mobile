@@ -13,6 +13,7 @@ export type PlayerQueueItem = {
 };
 
 type PlayerStoreState = {
+  activeBundleId: string | null;
   activeBundleSlug: string | null;
   bundleTitle: string | null;
   bundleDescription: string | null;
@@ -68,6 +69,7 @@ function toPlayableQueue(items: BundleDetailItem[]) {
 }
 
 export const usePlayerStore = create<PlayerStore>((set) => ({
+  activeBundleId: null,
   activeBundleSlug: null,
   bundleTitle: null,
   bundleDescription: null,
@@ -91,9 +93,13 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
     }
 
     const queue = toPlayableQueue(bundle.items);
-    const safeIndex = queue.length > 0 ? Math.max(0, Math.min(startIndex, queue.length - 1)) : 0;
+    const safeIndex =
+      queue.length > 0
+        ? Math.max(0, Math.min(startIndex, queue.length - 1))
+        : 0;
 
     set((state) => ({
+      activeBundleId: bundle.id,
       activeBundleSlug: bundle.slug,
       bundleTitle: bundle.title,
       bundleDescription: bundle.description,
@@ -111,6 +117,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
     const queue = item.audioUrl ? [toQueueItem(item)] : [];
 
     set((state) => ({
+      activeBundleId: null,
       activeBundleSlug: null,
       bundleTitle: options?.bundleTitle ?? 'Affirmation',
       bundleDescription: options?.bundleDescription ?? null,
@@ -126,6 +133,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
 
   clearPlayer: () => {
     set({
+      activeBundleId: null,
       activeBundleSlug: null,
       bundleTitle: null,
       bundleDescription: null,

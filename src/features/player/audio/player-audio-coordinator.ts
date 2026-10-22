@@ -9,6 +9,7 @@ import type {
   PlayerSessionSnapshot,
 } from '@/features/player/audio/types';
 import { clearContinueListeningProgress } from '@/features/player/services/continue-listening-service';
+import { recordBundlePlay } from '@/features/player/services/bundle-play-service';
 import { usePlayerStore } from '@/features/player/store/player-store';
 
 /**
@@ -41,6 +42,7 @@ export class PlayerAudioCoordinator {
   private hasCompletedBundle = false;
   private sawDidJustFinish = false;
   private loadRequestId = 0;
+  private trackedSessionRevision: number | null = null;
 
   initialize() {
     if (this.initialized) {
@@ -73,6 +75,7 @@ export class PlayerAudioCoordinator {
     this.sawDidJustFinish = false;
     this.sessionRepeatDurationMinutes = 0;
     this.repeatUntil = null;
+    this.trackedSessionRevision = null;
   }
 
   syncSession(session: PlayerSessionSnapshot) {
@@ -234,8 +237,22 @@ export class PlayerAudioCoordinator {
 
   private async handleVoiceStatusChange(status: AudioStatus) {
     const store = usePlayerStore.getState();
+    const activeBundleId = store.activeBundleId;
     const effectiveIsPlaying =
       store.isInAffirmationGap || status.playing || store.isPlaying;
+
+    const shouldRecordBundlePlay =
+      status.playing &&
+      activeBundleId &&
+      this.trackedSessionRevision !== store.sessionRevision;
+
+    if (shouldRecordBundlePlay) {
+      this.trackedSessionRevision = store.sessionRevision;
+
+      // This is intentionally a best-effort user-history event. Guests do not
+      // have server history, and playback must never be blocked by its request.
+      void recordBundlePlay(activeBundleId).catch(() => undefined);
+    }
 
     store.syncPlaybackSnapshot({
       isPlaying: effectiveIsPlaying,

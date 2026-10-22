@@ -185,7 +185,7 @@ export function DailyRhythmSection() {
 const styles = StyleSheet.create({
   stateCard: { borderRadius: Spacing.four, padding: Spacing.four, borderWidth: 1, gap: Spacing.three },
   rhythmSection: { gap: Spacing.three },
-  stateTitle: { fontSize: 28, lineHeight: 34 },
+  stateTitle: { fontSize: 22, lineHeight: 27 },
   sectionHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: Spacing.three },
   nextPractice: { flexDirection: 'row', gap: Spacing.three, alignItems: 'center' },
   nextPracticeCard: { borderRadius: Spacing.four, borderWidth: 1, padding: Spacing.four, gap: Spacing.three },

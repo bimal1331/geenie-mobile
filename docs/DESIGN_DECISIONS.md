@@ -84,6 +84,15 @@ premium access, and audio URLs without requiring a progress API.
 When a bundle is still loaded in the active app session, the global mini-player
 is the sole resume control and Home suppresses the duplicate card.
 
+## 2026-10-22 — Listening progress
+
+**Decision:** Signed-in listening progress records a bundle once its audio has
+genuinely started; it does not require every affirmation to finish. Home uses a
+compact weekly listening-days card that opens calendar-based Practice History.
+History groups play events by day and retains multiple listens of the same
+bundle. Practice slots may reuse a bundle, so progress never assigns a play to
+a particular slot or launch surface.
+
 ## Maintenance rule
 
 Add an entry only after a product/design direction is approved and would affect

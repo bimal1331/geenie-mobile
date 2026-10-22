@@ -35,6 +35,8 @@ authentication, settings synchronization, and player audio coordination.
 - `features/settings`: local persistence and signed-in user-settings sync
 - `features/practice`: signed-in recurring bundle plans, Home's daily-rhythm
   surface, and device-local reminder scheduling
+- `features/listening`: server-backed listening history and Home progress
+  summaries
 - `services/api`: authenticated/optional request client for admin-hosted mobile
   endpoints
 
