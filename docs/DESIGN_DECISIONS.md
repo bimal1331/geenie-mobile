@@ -70,6 +70,11 @@ and an optional reminder.
 - Home does not use a large greeting or supporting copy; the next practice and
   each later practice use separate surfaces rather than one shared schedule
   card, so they remain visually distinct and scannable.
+- Home's top-level Progress, Daily Rhythm, and Continue Listening modules use
+  deliberate vertical separation. Within Daily Rhythm, a missed practice has a
+  warm alert treatment, the next practice is the strongest surface, and later
+  practices are quieter compact rows. Continue Listening starts after a subtle
+  divider rather than blending into the practice list.
 - The practice builder uses a simple named moment, time, day chips, bundle
   selection, and reminder toggle; it does not introduce per-practice playback
   duration in the first version.

@@ -85,13 +85,16 @@ export function ContinueListeningSection() {
   }
 
   return (
-    <View style={styles.section}>
+    <View style={[styles.section, { borderTopColor: theme.dividerSoft }]}>
       <ThemedText type="subtitle" style={styles.sectionTitle}>Continue listening</ThemedText>
       <ThemedView
         type="backgroundElement"
         style={[
           styles.card,
-          { backgroundColor: theme.surfaceElevated, borderColor: theme.borderSoft },
+          {
+            backgroundColor: theme.surfaceElevatedStrong,
+            borderColor: theme.borderStrong,
+          },
         ]}>
         <View style={styles.bundleRow}>
           {progress.bundleCoverImageUrl ? (
@@ -134,7 +137,11 @@ export function ContinueListeningSection() {
 }
 
 const styles = StyleSheet.create({
-  section: { gap: Spacing.two },
+  section: {
+    gap: Spacing.two,
+    paddingTop: Spacing.five,
+    borderTopWidth: 1,
+  },
   sectionTitle: { fontSize: 22, lineHeight: 27 },
   card: { borderRadius: Spacing.four, borderWidth: 1, padding: Spacing.four, gap: Spacing.three },
   bundleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },

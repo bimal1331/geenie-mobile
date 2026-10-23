@@ -53,8 +53,8 @@ function PracticeRow({ slot, onPress }: { slot: PracticeSlot; onPress: () => voi
         style={[
           styles.slotRow,
           {
-            backgroundColor: theme.surfaceElevated,
-            borderColor: theme.borderSoft,
+            backgroundColor: theme.surfacePanel,
+            borderColor: theme.dividerSoft,
           },
         ]}>
         <PracticeCover imageUrl={slot.bundle.coverImageUrl} size="small" />
@@ -89,14 +89,16 @@ function EarlierPracticeCard({
       style={[
         styles.earlierPracticeCard,
         {
-          backgroundColor: theme.surfaceElevated,
-          borderColor: theme.borderSoft,
+          backgroundColor: theme.backgroundSelected,
+          borderColor: theme.dividerSoft,
         },
       ]}>
       <View style={styles.earlierPracticeRow}>
         <PracticeCover imageUrl={slot.bundle.coverImageUrl} size="small" />
         <View style={styles.slotCopy}>
-          <ThemedText type="smallBold" themeColor="textSecondary" style={styles.eyebrow}>
+          <ThemedText
+            type="smallBold"
+            style={[styles.eyebrow, { color: theme.accentSecondary }]}>
             MISSED PRACTICE
           </ThemedText>
           <ThemedText type="smallBold" numberOfLines={1}>
@@ -115,9 +117,13 @@ function EarlierPracticeCard({
           pressed && styles.pressed,
           isStarting && styles.disabled,
         ]}>
-        <ThemedView type="backgroundSelected" style={styles.primaryButton}>
-          <SymbolView name="play.fill" tintColor={theme.text} size={14} />
-          <ThemedText type="smallBold">
+        <ThemedView
+          style={[
+            styles.missedPracticeButton,
+            { backgroundColor: theme.accentSecondary },
+          ]}>
+          <SymbolView name="play.fill" tintColor={theme.onAccentText} size={13} />
+          <ThemedText type="smallBold" style={{ color: theme.onAccentText }}>
             {isStarting ? 'Starting...' : 'Listen now'}
           </ThemedText>
         </ThemedView>
@@ -314,8 +320,8 @@ export function DailyRhythmSection() {
         style={[
           styles.nextPracticeCard,
           {
-            backgroundColor: theme.surfaceElevated,
-            borderColor: theme.borderSoft,
+            backgroundColor: theme.surfaceElevatedStrong,
+            borderColor: theme.borderStrong,
           },
         ]}>
         <View style={styles.nextPractice}>
@@ -401,7 +407,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.one,
   },
   earlierPracticeCard: {
-    gap: Spacing.three,
+    gap: Spacing.two,
     padding: Spacing.three,
     borderRadius: Spacing.three,
     borderWidth: 1,
@@ -428,8 +434,8 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
   },
   slotCover: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     borderRadius: Spacing.two,
   },
   placeholderCover: {
@@ -461,6 +467,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     borderRadius: 999,
   },
+  missedPracticeButton: {
+    alignSelf: 'center',
+    minWidth: '52%',
+    minHeight: 42,
+    flexDirection: 'row',
+    gap: Spacing.two,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.three,
+    borderRadius: 999,
+  },
   secondaryButton: {
     alignSelf: 'flex-start',
     paddingHorizontal: Spacing.three,
@@ -474,7 +491,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.three,
     alignItems: 'center',
-    padding: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     borderRadius: Spacing.three,
     borderWidth: 1,
   },
