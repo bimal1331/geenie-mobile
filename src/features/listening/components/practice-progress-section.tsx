@@ -7,13 +7,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { getListeningHistory } from '@/features/listening/services/listening-history-service';
+import { getLocalDateKey } from '@/features/listening/utils/local-date';
 import { useTheme } from '@/hooks/use-theme';
-
-function dateKey(value: Date) {
-  const offset = value.getTimezoneOffset() * 60_000;
-
-  return new Date(value.getTime() - offset).toISOString().slice(0, 10);
-}
 
 export function PracticeProgressSection() {
   const router = useRouter();
@@ -37,7 +32,10 @@ export function PracticeProgressSection() {
       return;
     }
 
-    const days = await getListeningHistory(dateKey(week[0]), dateKey(week[6]));
+    const days = await getListeningHistory(
+      getLocalDateKey(week[0]),
+      getLocalDateKey(week[6]),
+    );
     const datesWithPlays = days
       .filter((day) => day.plays.length > 0)
       .map((day) => day.date);
@@ -78,7 +76,7 @@ export function PracticeProgressSection() {
 
         <View style={styles.week}>
           {week.map((date) => {
-            const key = dateKey(date);
+            const key = getLocalDateKey(date);
             const isPlayed = played.has(key);
 
             return (

@@ -63,6 +63,10 @@ and an optional reminder.
 
 - Home prioritizes the next practice and a one-tap **Play now** action, then
   shows later scheduled practices.
+- A scheduled practice that has passed today is shown in a clearly labeled
+  **Missed today** section only when the user has not listened to that bundle
+  enough times that day. It remains a gentle one-tap invitation, clears at
+  midnight, and never creates a backlog from prior days.
 - Home does not use a large greeting or supporting copy; the next practice and
   each later practice use separate surfaces rather than one shared schedule
   card, so they remain visually distinct and scannable.

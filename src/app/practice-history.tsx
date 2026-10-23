@@ -11,20 +11,15 @@ import {
   getListeningHistory,
   type ListeningHistoryDay,
 } from '@/features/listening/services/listening-history-service';
+import { getLocalDateKey } from '@/features/listening/utils/local-date';
 import { useTheme } from '@/hooks/use-theme';
-
-function dateKey(date: Date) {
-  const offset = date.getTimezoneOffset() * 60_000;
-
-  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
-}
 
 export default function PracticeHistoryScreen() {
   const router = useRouter();
   const theme = useTheme();
   const now = useMemo(() => new Date(), []);
   const [days, setDays] = useState<ListeningHistoryDay[]>([]);
-  const [selectedDate, setSelectedDate] = useState(dateKey(now));
+  const [selectedDate, setSelectedDate] = useState(getLocalDateKey(now));
   const monthStart = useMemo(
     () => new Date(now.getFullYear(), now.getMonth(), 1),
     [now],
@@ -36,7 +31,10 @@ export default function PracticeHistoryScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      void getListeningHistory(dateKey(monthStart), dateKey(monthEnd))
+      void getListeningHistory(
+        getLocalDateKey(monthStart),
+        getLocalDateKey(monthEnd),
+      )
         .then(setDays)
         .catch(() => setDays([]));
     }, [monthEnd, monthStart]),
@@ -88,7 +86,7 @@ export default function PracticeHistoryScreen() {
 
         <View style={styles.grid}>
           {dates.map((date) => {
-            const key = dateKey(date);
+            const key = getLocalDateKey(date);
 
             return (
               <Pressable

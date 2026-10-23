@@ -2,6 +2,17 @@ import type { PracticeSlot, PracticeWeekday } from '@/features/practice/types';
 
 export const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 
+export type ScheduledPractice = {
+  slot: PracticeSlot;
+  date: Date;
+};
+
+type BundlePlay = {
+  bundle: {
+    id: string;
+  };
+};
+
 export function parsePracticeTime(value: string) {
   const match = /^(\d{2}):(\d{2})$/.exec(value);
 
@@ -61,10 +72,55 @@ export function getNextPracticeDate(slot: PracticeSlot, now = new Date()) {
 }
 
 export function getNextPracticeSlot(practiceSlots: PracticeSlot[], now = new Date()) {
+  return getUpcomingPracticeSlots(practiceSlots, now)[0] ?? null;
+}
+
+export function getUpcomingPracticeSlots(
+  practiceSlots: PracticeSlot[],
+  now = new Date(),
+): ScheduledPractice[] {
   return practiceSlots
     .map((slot) => ({ slot, date: getNextPracticeDate(slot, now) }))
-    .filter((entry): entry is { slot: PracticeSlot; date: Date } => Boolean(entry.date))
-    .sort((left, right) => left.date.getTime() - right.date.getTime())[0] ?? null;
+    .filter((entry): entry is ScheduledPractice => Boolean(entry.date))
+    .sort((left, right) => left.date.getTime() - right.date.getTime());
+}
+
+export function getEarlierTodayPracticeSlots(
+  practiceSlots: PracticeSlot[],
+  plays: BundlePlay[],
+  now = new Date(),
+): PracticeSlot[] {
+  const scheduledToday = practiceSlots
+    .filter((slot) => slot.weekdays.includes(now.getDay() as PracticeWeekday))
+    .map((slot) => {
+      const { hour, minute } = parsePracticeTime(slot.scheduledTime);
+      const scheduledAt = new Date(now);
+
+      scheduledAt.setHours(hour, minute, 0, 0);
+      return { slot, scheduledAt };
+    })
+    .filter(({ scheduledAt }) => scheduledAt.getTime() <= now.getTime())
+    .sort((left, right) => left.scheduledAt.getTime() - right.scheduledAt.getTime());
+  const availablePlaysByBundle = new Map<string, number>();
+
+  // A play can come from any app surface. When the same bundle is scheduled
+  // more than once, allocate its same-day plays to those slots in time order.
+  for (const play of plays) {
+    const playCount = availablePlaysByBundle.get(play.bundle.id) ?? 0;
+
+    availablePlaysByBundle.set(play.bundle.id, playCount + 1);
+  }
+
+  return scheduledToday.flatMap(({ slot }) => {
+    const playCount = availablePlaysByBundle.get(slot.bundle.id) ?? 0;
+
+    if (playCount === 0) {
+      return [slot];
+    }
+
+    availablePlaysByBundle.set(slot.bundle.id, playCount - 1);
+    return [];
+  });
 }
 
 export function formatNextPracticeDate(date: Date, now = new Date()) {
