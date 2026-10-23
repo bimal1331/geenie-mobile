@@ -11,11 +11,72 @@ import { useTheme } from '@/hooks/use-theme';
 type BundleListCardProps = {
   bundle: BundleSummary;
   onPress?: () => void;
-  variant?: 'card' | 'imageStrip';
+  variant?: 'card' | 'imageStrip' | 'compact';
 };
 
 export function BundleListCard({ bundle, onPress, variant = 'card' }: BundleListCardProps) {
   const theme = useTheme();
+
+  if (variant === 'compact') {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Open ${bundle.title}`}
+        onPress={onPress}
+        style={({ pressed }) => pressed && styles.pressed}>
+        <ThemedView
+          type="backgroundElement"
+          style={[
+            styles.compactCard,
+            {
+              backgroundColor: theme.surfacePanel,
+              borderColor: theme.dividerSoft,
+            },
+          ]}>
+          {bundle.coverImageUrl ? (
+            <Image
+              contentFit="cover"
+              source={{ uri: bundle.coverImageUrl }}
+              style={styles.compactCover}
+            />
+          ) : (
+            <ThemedView type="backgroundSelected" style={styles.compactCover}>
+              <ThemedText type="smallBold">Bundle</ThemedText>
+            </ThemedView>
+          )}
+
+          <View style={styles.compactContent}>
+            <ThemedText
+              type="subtitle"
+              numberOfLines={1}
+              style={[styles.compactTitle, { color: theme.textDisplay }]}>
+              {bundle.title}
+            </ThemedText>
+            <View style={styles.compactMeta}>
+              <ThemedText themeColor="textSecondary">
+                {bundle.affirmationCount}{' '}
+                {bundle.affirmationCount === 1 ? 'affirmation' : 'affirmations'}
+              </ThemedText>
+              {bundle.isPremium ? (
+                <ThemedView type="backgroundSelected" style={styles.compactBadge}>
+                  <View style={styles.badgeLabel}>
+                    {bundle.isLocked ? (
+                      <SymbolView name="lock.fill" tintColor={theme.text} size={11} />
+                    ) : null}
+                    <ThemedText type="smallBold">
+                      {bundle.isLocked ? 'Locked' : 'Premium'}
+                    </ThemedText>
+                  </View>
+                </ThemedView>
+              ) : null}
+            </View>
+          </View>
+
+          <SymbolView name="chevron.right" tintColor={theme.textSecondary} size={18} />
+        </ThemedView>
+      </Pressable>
+    );
+  }
 
   if (variant === 'imageStrip') {
     return (
@@ -151,6 +212,42 @@ export function BundleListCard({ bundle, onPress, variant = 'card' }: BundleList
 }
 
 const styles = StyleSheet.create({
+  compactCard: {
+    minHeight: 92,
+    flexDirection: 'row',
+    gap: Spacing.three,
+    alignItems: 'center',
+    padding: Spacing.two,
+    borderRadius: Spacing.three,
+    borderWidth: 1,
+  },
+  compactCover: {
+    width: 76,
+    height: 76,
+    borderRadius: Spacing.two,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compactContent: {
+    flex: 1,
+    gap: Spacing.one,
+  },
+  compactTitle: {
+    fontFamily: Fonts.serif,
+    fontSize: 25,
+    lineHeight: 30,
+  },
+  compactMeta: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+    alignItems: 'center',
+  },
+  compactBadge: {
+    borderRadius: 999,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.half,
+  },
   card: {
     borderRadius: Spacing.four,
     paddingHorizontal: Spacing.three,

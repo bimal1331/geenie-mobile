@@ -85,7 +85,7 @@ export default function LibraryScreen() {
           <BundleListCard
             key={bundle.id}
             bundle={bundle}
-            variant="imageStrip"
+            variant="compact"
             onPress={() => router.push(`/bundles/${bundle.slug}`)}
           />
         ))}

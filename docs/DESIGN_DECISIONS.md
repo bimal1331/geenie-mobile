@@ -5,15 +5,19 @@ backlog or a changelog.
 
 ## 2026-09-17 — Bundle discovery layout
 
-**Decision:** Explore and Library use **Minimal List With Image Strips**.
+**Decision:** Explore uses **Minimal List With Image Strips**; Library uses a
+compact saved-bundle row.
 
 - Each bundle is a compact vertical collection card with a shallow,
-  full-width cover-image strip.
+  full-width cover-image strip in Explore.
 - Content uses the existing warm editorial theme: serif title, concise
   description, affirmation count, optional Premium badge, and circular
   chevron affordance.
-- The same list component supports this variant so Explore and Library remain
-  visually aligned while retaining their different data/auth states.
+- Library uses a smaller square cover, title, affirmation count, optional
+  Premium badge, and understated chevron. It opens bundle detail rather than
+  starting playback from the list.
+- The shared list-card component supports both variants so Explore and Library
+  remain visually aligned while retaining their distinct roles.
 
 **Bundle Detail:** Uses the same bundle cover image in a roomier 16:9 hero
 directly below the detail heading. One uploaded cover image is the editorial
