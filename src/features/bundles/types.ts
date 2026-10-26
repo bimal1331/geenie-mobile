@@ -1,5 +1,14 @@
 export type BundlePlaybackVariantKey = 'default' | 'male' | 'female';
 
+export type BundleTag = {
+  id: string;
+  slug: string;
+  name: string;
+  isExploreCategory: boolean;
+  exploreSortOrder: number;
+  sortOrder: number;
+};
+
 export type BundleSummary = {
   id: string;
   slug: string;
@@ -9,6 +18,7 @@ export type BundleSummary = {
   affirmationCount: number;
   isPremium: boolean;
   isLocked: boolean;
+  tags: BundleTag[];
 };
 
 export type BundleDetailItem = {

@@ -28,6 +28,17 @@ source; screens use different display crops rather than separate images.
 **Why:** The selected direction stays close to the earlier interface while
 giving cover art more presence and keeping the catalog scannable.
 
+## 2026-10-26 — Explore topic sections
+
+**Decision:** Explore groups bundles under editorial topic sections. The app
+uses directly assigned bundle tags supplied by the API; only tags marked as
+Explore categories become sections, and their editorial order is preserved.
+
+A bundle may appear in multiple relevant sections. Tags remain the shared
+vocabulary for future bundle and affirmation search, rather than creating a
+separate category taxonomy. Until topics have been assigned, Explore keeps its
+ungrouped list so published bundles never disappear.
+
 ## 2026-09-22 — Premium access presentation
 
 **Decision:** Premium bundles remain discoverable in Explore and Library. A

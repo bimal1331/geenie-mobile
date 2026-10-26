@@ -6,6 +6,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { BundleListCard } from '@/features/bundles/components/bundle-list-card';
 import { useBundles } from '@/features/bundles/hooks/use-bundles';
+import { groupBundlesForExplore } from '@/features/bundles/services/explore-bundle-groups';
 import { useTheme } from '@/hooks/use-theme';
 import { StyleSheet } from 'react-native';
 
@@ -13,6 +14,7 @@ export function BundlesScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { bundles, isLoading, error } = useBundles();
+  const bundleGroups = groupBundlesForExplore(bundles);
 
   return (
     <AppScreen
@@ -55,13 +57,18 @@ export function BundlesScreen() {
 
       {!isLoading &&
         !error &&
-        bundles.map((bundle) => (
-          <BundleListCard
-            key={bundle.id}
-            bundle={bundle}
-            variant="imageStrip"
-            onPress={() => router.push(`/bundles/${bundle.slug}`)}
-          />
+        bundleGroups.map((group) => (
+          <ThemedView key={group.id} style={styles.group}>
+            {group.name ? <ThemedText type="subtitle">{group.name}</ThemedText> : null}
+            {group.bundles.map((bundle) => (
+              <BundleListCard
+                key={bundle.id}
+                bundle={bundle}
+                variant="imageStrip"
+                onPress={() => router.push(`/bundles/${bundle.slug}`)}
+              />
+            ))}
+          </ThemedView>
         ))}
     </AppScreen>
   );
@@ -73,5 +80,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
     borderWidth: 1,
+  },
+  group: {
+    gap: Spacing.three,
   },
 });
