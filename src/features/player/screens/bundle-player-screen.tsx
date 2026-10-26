@@ -13,7 +13,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
 import { MusicPickerSheet } from '@/features/player/components/music-picker-sheet';
 import { PlaybackSettingsSheet } from '@/features/player/components/playback-settings-sheet';
@@ -25,13 +24,10 @@ type BundlePlayerScreenProps = {
 };
 
 const playerBackgroundImage = require('../../../../assets/images/player/background-abstract-mist.png');
-const nocturneBackgroundImage = require('../../../../assets/images/player/background-nocturne-watercolor.png');
 
 export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
   const router = useRouter();
-  const colorScheme = useColorScheme();
   const theme = useTheme();
-  const backgroundImage = colorScheme === 'dark' ? nocturneBackgroundImage : playerBackgroundImage;
   const { width, height } = useWindowDimensions();
   const [isMusicPickerOpen, setIsMusicPickerOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -78,7 +74,11 @@ export function BundlePlayerScreen({ slug }: BundlePlayerScreenProps) {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <Image contentFit="cover" source={backgroundImage} style={StyleSheet.absoluteFill} />
+      <Image
+        contentFit="cover"
+        source={playerBackgroundImage}
+        style={[StyleSheet.absoluteFill, { opacity: theme.backgroundImageOpacity }]}
+      />
       <View style={[styles.backgroundOverlay, { backgroundColor: theme.playerOverlay }]} />
 
       <ScrollView
