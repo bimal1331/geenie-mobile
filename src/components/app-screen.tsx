@@ -5,7 +5,8 @@ import { Image } from 'expo-image';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
 
 type AppScreenProps = {
@@ -19,6 +20,7 @@ type AppScreenProps = {
 };
 
 const appBackgroundImage = require('../../assets/images/player/background-editorial-paper.png');
+const nocturneBackgroundImage = require('../../assets/images/player/background-nocturne-watercolor.png');
 
 export function AppScreen({
   headerLeft,
@@ -29,11 +31,17 @@ export function AppScreen({
   description,
   children,
 }: AppScreenProps) {
+  const colorScheme = useColorScheme();
   const theme = useTheme();
+  const backgroundImage = colorScheme === 'dark' ? nocturneBackgroundImage : appBackgroundImage;
 
   return (
     <View style={[styles.screenRoot, { backgroundColor: theme.background }]}>
-      <Image contentFit="cover" source={appBackgroundImage} style={StyleSheet.absoluteFill} />
+      <Image
+        contentFit="cover"
+        source={backgroundImage}
+        style={[StyleSheet.absoluteFill, { opacity: theme.backgroundImageOpacity }]}
+      />
       <View style={[styles.backgroundOverlay, { backgroundColor: theme.heroOverlay }]} />
 
       <ScrollView

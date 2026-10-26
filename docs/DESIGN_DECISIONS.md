@@ -41,6 +41,18 @@ vocabulary for future bundle and affirmation search, rather than creating a
 separate category taxonomy. Until topics have been assigned, Explore keeps its
 ungrouped list so published bundles never disappear.
 
+## 2026-10-26 — Warm-night dark mode
+
+**Decision:** Dark mode is a complete warm-night surface treatment, not light
+paper behind dark cards. It uses a dedicated low-contrast nocturne watercolor
+background in aubergine and espresso tones. Typography uses softened cream and
+warm-muted supporting copy; elevated surfaces use related plum-charcoal browns
+with restrained warm borders.
+
+Shared semantic theme tokens control this treatment so screens, cards, player
+surfaces, and the tab bar remain visually coherent when the device appearance
+changes.
+
 ## 2026-09-22 — Premium access presentation
 
 **Decision:** Premium bundles remain discoverable in Explore and Library. A
