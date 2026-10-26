@@ -4,7 +4,7 @@ import { AppScreen } from '@/components/app-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { BundleListCard } from '@/features/bundles/components/bundle-list-card';
+import { ExploreCategoryListCard } from '@/features/bundles/components/explore-category-list-card';
 import { useBundles } from '@/features/bundles/hooks/use-bundles';
 import { groupBundlesForExplore } from '@/features/bundles/services/explore-bundle-groups';
 import { useTheme } from '@/hooks/use-theme';
@@ -19,7 +19,7 @@ export function BundlesScreen() {
   return (
     <AppScreen
       title="Explore"
-      description="Curated affirmation bundles to support every season of your life.">
+      description="Choose a focus for the moment you want to create.">
       {isLoading ? (
         <ThemedView
           type="backgroundElement"
@@ -57,18 +57,13 @@ export function BundlesScreen() {
 
       {!isLoading &&
         !error &&
+        bundles.length > 0 &&
         bundleGroups.map((group) => (
-          <ThemedView key={group.id} style={styles.group}>
-            {group.name ? <ThemedText type="subtitle">{group.name}</ThemedText> : null}
-            {group.bundles.map((bundle) => (
-              <BundleListCard
-                key={bundle.id}
-                bundle={bundle}
-                variant="imageStrip"
-                onPress={() => router.push(`/bundles/${bundle.slug}`)}
-              />
-            ))}
-          </ThemedView>
+          <ExploreCategoryListCard
+            category={group}
+            key={group.id}
+            onPress={() => router.push(`/categories/${group.id}`)}
+          />
         ))}
     </AppScreen>
   );
@@ -80,8 +75,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.four,
     borderWidth: 1,
-  },
-  group: {
-    gap: Spacing.three,
   },
 });

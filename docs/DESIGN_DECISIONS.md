@@ -30,9 +30,11 @@ giving cover art more presence and keeping the catalog scannable.
 
 ## 2026-10-26 — Explore topic sections
 
-**Decision:** Explore groups bundles under editorial topic sections. The app
-uses directly assigned bundle tags supplied by the API; only tags marked as
-Explore categories become sections, and their editorial order is preserved.
+**Decision:** Explore presents editorial topic sections as a compact category
+list. Tapping a category opens its own screen, where its bundles use the
+approved image-strip cards. The app uses directly assigned bundle tags supplied
+by the API; only tags marked as Explore categories become category rows, and
+their editorial order is preserved.
 
 A bundle may appear in multiple relevant sections. Tags remain the shared
 vocabulary for future bundle and affirmation search, rather than creating a

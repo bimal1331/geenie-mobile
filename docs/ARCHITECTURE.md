@@ -18,6 +18,7 @@
   Profile     email OTP account flow
 
 /bundles/:slug  bundle detail
+/categories/:id Explore category bundle list
 /player/:slug   bundle player
 /practice/:id   create or edit a recurring practice (`new` creates one)
 ```

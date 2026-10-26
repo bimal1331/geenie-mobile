@@ -2,6 +2,7 @@ import type { BundleSummary, BundleTag } from '@/features/bundles/types';
 
 export type ExploreBundleGroup = {
   id: string;
+  slug: string;
   name: string | null;
   bundles: BundleSummary[];
 };
@@ -50,6 +51,7 @@ export function groupBundlesForExplore(bundles: BundleSummary[]): ExploreBundleG
     .sort((left, right) => compareTopics(left.topic, right.topic))
     .map(({ topic, entries }) => ({
       id: topic.id,
+      slug: topic.slug,
       name: topic.name,
       bundles: entries
         .sort(
@@ -61,12 +63,20 @@ export function groupBundlesForExplore(bundles: BundleSummary[]): ExploreBundleG
     }));
 
   if (groups.length === 0) {
-    return [{ id: 'all-bundles', name: null, bundles: uncategorizedBundles }];
+    return [
+      {
+        id: 'all-bundles',
+        slug: 'all-bundles',
+        name: 'All bundles',
+        bundles: uncategorizedBundles,
+      },
+    ];
   }
 
   if (uncategorizedBundles.length > 0) {
     groups.push({
       id: 'more-to-explore',
+      slug: 'more-to-explore',
       name: 'More to explore',
       bundles: uncategorizedBundles.sort((left, right) =>
         left.title.localeCompare(right.title),
