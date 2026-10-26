@@ -50,7 +50,7 @@ export const Colors = {
     onAccentText: '#28170D',
     backgroundImageOpacity: 1,
     heroOverlay: 'rgba(26, 10, 14, 0.06)',
-    playerOverlay: 'rgba(27, 12, 15, 0.8)',
+    playerOverlay: 'rgba(27, 12, 15, 0.35)',
     surfaceFloating: '#2A181B',
     surfaceElevated: '#302024',
     surfaceElevatedStrong: '#38252A',
