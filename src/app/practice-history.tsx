@@ -14,6 +14,8 @@ import {
 import { getLocalDateKey } from '@/features/listening/utils/local-date';
 import { useTheme } from '@/hooks/use-theme';
 
+const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 export default function PracticeHistoryScreen() {
   const router = useRouter();
   const theme = useTheme();
@@ -45,6 +47,7 @@ export default function PracticeHistoryScreen() {
     { length: monthEnd.getDate() },
     (_, index) => new Date(now.getFullYear(), now.getMonth(), index + 1),
   );
+  const leadingEmptyDays = Array.from({ length: monthStart.getDay() });
   const playedDates = new Set(days.map((day) => day.date));
   const playsByBundle = new Map<string, string[]>();
 
@@ -84,30 +87,47 @@ export default function PracticeHistoryScreen() {
           })}
         </ThemedText>
 
+        <View style={styles.weekdayRow}>
+          {WEEKDAY_LABELS.map((weekday) => (
+            <ThemedText
+              key={weekday}
+              themeColor="textSecondary"
+              type="smallBold"
+              style={styles.weekdayLabel}
+            >
+              {weekday}
+            </ThemedText>
+          ))}
+        </View>
+
         <View style={styles.grid}>
+          {leadingEmptyDays.map((_, index) => (
+            <View key={`empty-${index}`} style={styles.calendarCell} />
+          ))}
           {dates.map((date) => {
             const key = getLocalDateKey(date);
 
             return (
-              <Pressable
-                key={key}
-                onPress={() => setSelectedDate(key)}
-                style={[
-                  styles.date,
-                  selectedDate === key && {
-                    backgroundColor: theme.backgroundSelected,
-                  },
-                ]}>
-                <ThemedText>{date.getDate()}</ThemedText>
-                {playedDates.has(key) ? (
-                  <View
-                    style={[
-                      styles.marker,
-                      { backgroundColor: theme.accentSecondary },
-                    ]}
-                  />
-                ) : null}
-              </Pressable>
+              <View key={key} style={styles.calendarCell}>
+                <Pressable
+                  onPress={() => setSelectedDate(key)}
+                  style={[
+                    styles.date,
+                    selectedDate === key && {
+                      backgroundColor: theme.backgroundSelected,
+                    },
+                  ]}>
+                  <ThemedText>{date.getDate()}</ThemedText>
+                  {playedDates.has(key) ? (
+                    <View
+                      style={[
+                        styles.marker,
+                        { backgroundColor: theme.accentSecondary },
+                      ]}
+                    />
+                  ) : null}
+                </Pressable>
+              </View>
             );
           })}
         </View>
@@ -162,11 +182,23 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.two,
+  },
+  weekdayRow: {
+    flexDirection: 'row',
+  },
+  weekdayLabel: {
+    width: '14.2857%',
+    textAlign: 'center',
+  },
+  calendarCell: {
+    width: '14.2857%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   date: {
-    width: '11%',
-    aspectRatio: 1,
+    width: 44,
+    height: 44,
     gap: 2,
     alignItems: 'center',
     justifyContent: 'center',
