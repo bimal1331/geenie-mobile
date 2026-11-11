@@ -20,16 +20,48 @@ export default function PracticeHistoryScreen() {
   const router = useRouter();
   const theme = useTheme();
   const now = useMemo(() => new Date(), []);
+  const [viewedMonth, setViewedMonth] = useState(
+    () => new Date(now.getFullYear(), now.getMonth(), 1),
+  );
   const [days, setDays] = useState<ListeningHistoryDay[]>([]);
   const [selectedDate, setSelectedDate] = useState(getLocalDateKey(now));
   const monthStart = useMemo(
-    () => new Date(now.getFullYear(), now.getMonth(), 1),
-    [now],
+    () => new Date(viewedMonth.getFullYear(), viewedMonth.getMonth(), 1),
+    [viewedMonth],
   );
   const monthEnd = useMemo(
-    () => new Date(now.getFullYear(), now.getMonth() + 1, 0),
-    [now],
+    () => new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 0),
+    [viewedMonth],
   );
+
+  const isCurrentMonth =
+    viewedMonth.getFullYear() === now.getFullYear() &&
+    viewedMonth.getMonth() === now.getMonth();
+
+  const changeMonth = (offset: number) => {
+    const nextMonth = new Date(
+      viewedMonth.getFullYear(),
+      viewedMonth.getMonth() + offset,
+      1,
+    );
+    const selectedDayOfMonth = new Date(`${selectedDate}T12:00:00`).getDate();
+    const lastDayOfNextMonth = new Date(
+      nextMonth.getFullYear(),
+      nextMonth.getMonth() + 1,
+      0,
+    ).getDate();
+
+    setViewedMonth(nextMonth);
+    setSelectedDate(
+      getLocalDateKey(
+        new Date(
+          nextMonth.getFullYear(),
+          nextMonth.getMonth(),
+          Math.min(selectedDayOfMonth, lastDayOfNextMonth),
+        ),
+      ),
+    );
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -45,7 +77,8 @@ export default function PracticeHistoryScreen() {
   const selectedDay = days.find((day) => day.date === selectedDate);
   const dates = Array.from(
     { length: monthEnd.getDate() },
-    (_, index) => new Date(now.getFullYear(), now.getMonth(), index + 1),
+    (_, index) =>
+      new Date(viewedMonth.getFullYear(), viewedMonth.getMonth(), index + 1),
   );
   const leadingEmptyDays = Array.from({ length: monthStart.getDay() });
   const playedDates = new Set(days.map((day) => day.date));
@@ -80,12 +113,42 @@ export default function PracticeHistoryScreen() {
             borderColor: theme.borderSoft,
           },
         ]}>
-        <ThemedText type="subtitle">
-          {now.toLocaleDateString(undefined, {
-            month: 'long',
-            year: 'numeric',
-          })}
-        </ThemedText>
+        <View style={styles.monthHeader}>
+          <Pressable
+            accessibilityLabel="Previous month"
+            hitSlop={8}
+            onPress={() => changeMonth(-1)}
+            style={styles.monthButton}>
+            <SymbolView
+              name="chevron.left"
+              size={18}
+              tintColor={theme.text}
+            />
+          </Pressable>
+
+          <ThemedText type="subtitle">
+            {viewedMonth.toLocaleDateString(undefined, {
+              month: 'long',
+              year: 'numeric',
+            })}
+          </ThemedText>
+
+          <Pressable
+            accessibilityLabel="Next month"
+            disabled={isCurrentMonth}
+            hitSlop={8}
+            onPress={() => changeMonth(1)}
+            style={[
+              styles.monthButton,
+              isCurrentMonth && styles.monthButtonDisabled,
+            ]}>
+            <SymbolView
+              name="chevron.right"
+              size={18}
+              tintColor={theme.text}
+            />
+          </Pressable>
+        </View>
 
         <View style={styles.weekdayRow}>
           {WEEKDAY_LABELS.map((weekday) => (
@@ -178,6 +241,20 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
     borderRadius: Spacing.four,
     borderWidth: 1,
+  },
+  monthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  monthButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  monthButtonDisabled: {
+    opacity: 0.3,
   },
   grid: {
     flexDirection: 'row',
