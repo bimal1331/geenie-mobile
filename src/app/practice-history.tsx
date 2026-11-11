@@ -65,12 +65,27 @@ export default function PracticeHistoryScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      let isCurrentRequest = true;
+
+      setDays([]);
       void getListeningHistory(
         getLocalDateKey(monthStart),
         getLocalDateKey(monthEnd),
       )
-        .then(setDays)
-        .catch(() => setDays([]));
+        .then((history) => {
+          if (isCurrentRequest) {
+            setDays(history);
+          }
+        })
+        .catch(() => {
+          if (isCurrentRequest) {
+            setDays([]);
+          }
+        });
+
+      return () => {
+        isCurrentRequest = false;
+      };
     }, [monthEnd, monthStart]),
   );
 
@@ -83,6 +98,34 @@ export default function PracticeHistoryScreen() {
   const leadingEmptyDays = Array.from({ length: monthStart.getDay() });
   const playedDates = new Set(days.map((day) => day.date));
   const playsByBundle = new Map<string, string[]>();
+  const monthlyBundleCounts = new Map<
+    string,
+    { id: string; title: string; listens: number }
+  >();
+  const totalListens = days.reduce((total, day) => total + day.plays.length, 0);
+
+  days.forEach((day) => {
+    day.plays.forEach((play) => {
+      const bundle = monthlyBundleCounts.get(play.bundle.id) ?? {
+        id: play.bundle.id,
+        title: play.bundle.title,
+        listens: 0,
+      };
+
+      bundle.listens += 1;
+      monthlyBundleCounts.set(play.bundle.id, bundle);
+    });
+  });
+
+  const topBundles = [...monthlyBundleCounts.values()]
+    .sort((first, second) => {
+      if (second.listens !== first.listens) {
+        return second.listens - first.listens;
+      }
+
+      return first.title.localeCompare(second.title);
+    })
+    .slice(0, 5);
 
   selectedDay?.plays.forEach((play) => {
     const times = playsByBundle.get(play.bundle.title) ?? [];
@@ -104,6 +147,60 @@ export default function PracticeHistoryScreen() {
         </Pressable>
       }
       title="Practice history">
+      <ThemedView
+        type="backgroundElement"
+        style={[
+          styles.monthlySummary,
+          {
+            backgroundColor: theme.surfaceElevated,
+            borderColor: theme.borderSoft,
+          },
+        ]}>
+        <ThemedText type="smallBold">
+          {viewedMonth.toLocaleDateString(undefined, { month: 'long' })} at a
+          glance
+        </ThemedText>
+
+        <View style={styles.statistics}>
+          <View style={styles.statistic}>
+            <ThemedText style={styles.statisticValue}>{days.length}</ThemedText>
+            <ThemedText themeColor="textSecondary" type="small">
+              {days.length === 1 ? 'Listening day' : 'Listening days'}
+            </ThemedText>
+          </View>
+          <View style={styles.statistic}>
+            <ThemedText style={styles.statisticValue}>{totalListens}</ThemedText>
+            <ThemedText themeColor="textSecondary" type="small">
+              {totalListens === 1 ? 'Total listen' : 'Total listens'}
+            </ThemedText>
+          </View>
+        </View>
+
+        {topBundles.length > 0 ? (
+          <View style={[styles.topBundles, { borderColor: theme.borderSoft }]}>
+            <ThemedText type="smallBold">Top bundles</ThemedText>
+
+            {topBundles.map((bundle, index) => (
+              <View key={bundle.id} style={styles.topBundleRow}>
+                <ThemedText themeColor="textSecondary" type="smallBold">
+                  {index + 1}
+                </ThemedText>
+                <ThemedText
+                  numberOfLines={1}
+                  style={styles.topBundleTitle}
+                  type="smallBold">
+                  {bundle.title}
+                </ThemedText>
+                <ThemedText themeColor="textSecondary" type="small">
+                  {bundle.listens}{' '}
+                  {bundle.listens === 1 ? 'listen' : 'listens'}
+                </ThemedText>
+              </View>
+            ))}
+          </View>
+        ) : null}
+      </ThemedView>
+
       <ThemedView
         type="backgroundElement"
         style={[
@@ -236,6 +333,38 @@ export default function PracticeHistoryScreen() {
 }
 
 const styles = StyleSheet.create({
+  monthlySummary: {
+    gap: Spacing.three,
+    padding: Spacing.four,
+    borderRadius: Spacing.four,
+    borderWidth: 1,
+  },
+  statistics: {
+    flexDirection: 'row',
+    gap: Spacing.four,
+  },
+  statistic: {
+    flex: 1,
+    gap: Spacing.half,
+  },
+  statisticValue: {
+    fontSize: 28,
+    fontWeight: 700,
+    lineHeight: 34,
+  },
+  topBundles: {
+    gap: Spacing.two,
+    paddingTop: Spacing.three,
+    borderTopWidth: 1,
+  },
+  topBundleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  topBundleTitle: {
+    flex: 1,
+  },
   calendar: {
     gap: Spacing.three,
     padding: Spacing.four,
